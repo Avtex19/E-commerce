@@ -5,4 +5,5 @@ from .views import *
 
 urlpatterns = [
     path('', views.getRoutes),
+    path('register/', views.userRegisterView, name="register"),
 ]
