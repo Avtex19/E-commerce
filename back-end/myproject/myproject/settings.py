@@ -28,8 +28,9 @@ SECRET_KEY = 'django-insecure-9md1jpe9e57%y$al-gi43^b)*hi)o7jk2cdh5@--=_0)k6=xx^
 DEBUG = True
 
 ALLOWED_HOSTS = ['localhost', '127.0.0.1',]
+
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",  # Your React app's URL
+    "http://localhost:5173",
 ]
 
 
