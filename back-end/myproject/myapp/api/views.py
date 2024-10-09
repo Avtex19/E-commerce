@@ -18,6 +18,7 @@ def getRoutes(request):
 @api_view(['POST'])
 def userRegisterView(request):
     if request.method == 'POST':
+        print(request)
         serializer = RegisterUserSerializer(data=request.data)
         data = {}
         if serializer.is_valid():
