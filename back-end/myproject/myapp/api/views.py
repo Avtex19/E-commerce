@@ -29,7 +29,7 @@ class UserRegisterView(APIView):
                 'password2': openapi.Schema(type=openapi.TYPE_STRING, description='Password', format='password'),
 
             },
-            required=['username', 'email', 'password','password2'],
+            required=['username', 'email', 'password', 'password2'],
         ),
         responses={
             201: openapi.Response('Account has been created, JWT token included', openapi.Schema(
@@ -88,7 +88,6 @@ class LogoutView(APIView):
             400: 'Bad request (Invalid or missing refresh token)',
         }
     )
-
     def post(self, request):
         try:
             refresh_token = request.data["refresh_token"]
