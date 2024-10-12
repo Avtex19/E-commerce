@@ -75,6 +75,20 @@ class UserRegisterView(APIView):
 class LogoutView(APIView):
     permission_classes = (IsAuthenticated,)
 
+    @swagger_auto_schema(
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={
+                'refresh_token': openapi.Schema(type=openapi.TYPE_STRING, description='JWT refresh token'),
+            },
+            required=['refresh_token'],
+        ),
+        responses={
+            205: 'Token successfully blacklisted (Reset Content)',
+            400: 'Bad request (Invalid or missing refresh token)',
+        }
+    )
+
     def post(self, request):
         try:
             refresh_token = request.data["refresh_token"]
