@@ -4,10 +4,11 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
-from .serializers import RegisterUserSerializer, LoginUserSerializer
-from rest_framework import status
+from .serializers import RegisterUserSerializer, LoginUserSerializer, ProductSerializer, CategorySerializer
+from rest_framework import status, generics
 from django.contrib.auth import authenticate
 from drf_yasg import openapi
+from ..models import Product, Category
 
 
 @api_view(['GET'])
@@ -128,3 +129,15 @@ class UserLoginView(APIView):
             }, status=status.HTTP_200_OK)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class CategoriesView(generics.ListAPIView):
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
+    permission_classes = (IsAuthenticated,)
+
+
+class ProductView(generics.ListAPIView):
+    queryset = Product.objects.all()
+    serializer_class = ProductSerializer
+    permission_classes = (IsAuthenticated,)
