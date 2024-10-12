@@ -40,7 +40,7 @@ class Product(models.Model):
     price = models.FloatField()
     quantity = models.IntegerField()
     subcategory = models.ForeignKey(SubCategory, related_name='products', on_delete=models.CASCADE)
-
+    thumbnail = models.ImageField(upload_to='thumbnails/',blank=True, null=True)
 
     def __str__(self):
         return self.name
