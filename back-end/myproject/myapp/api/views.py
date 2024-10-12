@@ -1,23 +1,56 @@
+from drf_yasg.utils import swagger_auto_schema
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
-from .serializers import RegisterUserSerializer
+from .serializers import RegisterUserSerializer, LoginUserSerializer
 from rest_framework import status
+from django.contrib.auth import authenticate
+from drf_yasg import openapi
 
 
 @api_view(['GET'])
-def getRoutes(request):
+def getRoutes():
     routes = [
         '',
     ]
     return Response(routes)
 
 
-@api_view(['POST'])
-def userRegisterView(request):
-    if request.method == 'POST':
+class UserRegisterView(APIView):
+    @swagger_auto_schema(
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={
+                'username': openapi.Schema(type=openapi.TYPE_STRING, description='Username'),
+                'email': openapi.Schema(type=openapi.TYPE_STRING, description='Email'),
+                'password': openapi.Schema(type=openapi.TYPE_STRING, description='Password', format='password'),
+                'password2': openapi.Schema(type=openapi.TYPE_STRING, description='Password', format='password'),
+
+            },
+            required=['username', 'email', 'password','password2'],
+        ),
+        responses={
+            201: openapi.Response('Account has been created, JWT token included', openapi.Schema(
+                type=openapi.TYPE_OBJECT,
+                properties={
+                    'response': openapi.Schema(type=openapi.TYPE_STRING),
+                    'username': openapi.Schema(type=openapi.TYPE_STRING),
+                    'email': openapi.Schema(type=openapi.TYPE_STRING),
+                    'token': openapi.Schema(
+                        type=openapi.TYPE_OBJECT,
+                        properties={
+                            'refresh': openapi.Schema(type=openapi.TYPE_STRING),
+                            'access': openapi.Schema(type=openapi.TYPE_STRING),
+                        }
+                    ),
+                }
+            )),
+            400: 'Invalid input data'
+        }
+    )
+    def post(self, request):
         print(request)
         serializer = RegisterUserSerializer(data=request.data)
         data = {}
@@ -51,3 +84,34 @@ class LogoutView(APIView):
             return Response(status=status.HTTP_205_RESET_CONTENT)
         except Exception:
             return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+class UserLoginView(APIView):
+    @swagger_auto_schema(
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={
+                'username': openapi.Schema(type=openapi.TYPE_STRING, description='Username'),
+                'password': openapi.Schema(type=openapi.TYPE_STRING, description='Password', format='password'),
+            },
+            required=['username', 'password']
+        ),
+        responses={
+            200: 'Tokens returned',
+            401: 'Invalid credentials'
+        }
+    )
+    def post(self, request):
+        serializer = LoginUserSerializer(data=request.data)
+
+        if serializer.is_valid():
+            user = serializer.validated_data['user']
+            refresh = RefreshToken.for_user(user)
+            access_token = refresh.access_token
+
+            return Response({
+                'refresh': str(refresh),
+                'access': str(access_token)
+            }, status=status.HTTP_200_OK)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
