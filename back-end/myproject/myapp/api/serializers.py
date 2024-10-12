@@ -1,6 +1,7 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
 from django.contrib.auth import authenticate
+from ..models import Product, Category, SubCategory
 
 
 class RegisterUserSerializer(serializers.ModelSerializer):
@@ -26,8 +27,8 @@ class RegisterUserSerializer(serializers.ModelSerializer):
 
 
 class LoginUserSerializer(serializers.Serializer):
-    username=serializers.CharField()
-    password=serializers.CharField(write_only=True)
+    username = serializers.CharField()
+    password = serializers.CharField(write_only=True)
 
     def validate(self, attrs):
         username = attrs.get('username')
@@ -42,6 +43,23 @@ class LoginUserSerializer(serializers.Serializer):
         return attrs
 
 
+class CategorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Category
+        fields = '__all__'
 
 
+class SubCategorySerializer(serializers.ModelSerializer):
+    category = CategorySerializer()
 
+    class Meta:
+        model = SubCategory
+        fields = '__all__'
+
+
+class ProductSerializer(serializers.ModelSerializer):
+    category = serializers.StringRelatedField()
+    subcategory = serializers.StringRelatedField()
+    class Meta:
+        model = Product
+        fields = '__all__'
