@@ -4,11 +4,12 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
-from .serializers import RegisterUserSerializer, LoginUserSerializer, ProductSerializer, CategorySerializer
+from .serializers import RegisterUserSerializer, LoginUserSerializer, ProductSerializer, CategorySerializer, \
+    SubCategorySerializer
 from rest_framework import status, generics
 from django.contrib.auth import authenticate
 from drf_yasg import openapi
-from ..models import Product, Category
+from ..models import Product, Category, SubCategory
 
 
 @api_view(['GET'])
@@ -134,6 +135,11 @@ class UserLoginView(APIView):
 class CategoriesView(generics.ListAPIView):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
+    permission_classes = (IsAuthenticated,)
+
+class SubCategoriesView(generics.ListAPIView):
+    queryset = SubCategory.objects.all()
+    serializer_class = SubCategorySerializer
     permission_classes = (IsAuthenticated,)
 
 
