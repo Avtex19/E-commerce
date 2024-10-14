@@ -137,6 +137,7 @@ class CategoriesView(generics.ListAPIView):
     serializer_class = CategorySerializer
     permission_classes = (IsAuthenticated,)
 
+
 class SubCategoriesView(generics.ListAPIView):
     queryset = SubCategory.objects.all()
     serializer_class = SubCategorySerializer
