@@ -111,11 +111,12 @@ const LoginForm: React.FC<LoginFormProps> = ({ onLoginSuccess }) => {
                 </Button>
             </form>
 
-            <Typography variant="body2" sx={{ marginTop: 2, cursor: 'pointer' }} onClick={handleToRegisterPage}>
+            <Typography variant="body2" sx={{ marginTop: 2,}} >
                 Don't have an account?{' '}
                 <Typography
                     variant="body2"
-                    sx={{ display: 'inline', textDecoration: 'underline', fontWeight: 'bold' }}
+                    onClick={handleToRegisterPage}
+                    sx={{ display: 'inline', textDecoration: 'underline', fontWeight: 'bold',cursor:'pointer', }}
                 >
                     Sign up
                 </Typography>

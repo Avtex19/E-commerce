@@ -133,11 +133,12 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onRegisterSuccess }) => {
                     Register
                 </Button>
             </form>
-            <Typography variant="body2" sx={{ marginTop: 2, cursor: 'pointer' }} onClick={handleToLoginPage}>
+            <Typography variant="body2" sx={{ marginTop: 2,}} >
                 Already have an account?{' '}
                 <Typography
                     variant="body2"
-                    sx={{ display: 'inline',color:'primary', textDecoration: 'underline', fontWeight: 'bold' }}
+                    sx={{ display: 'inline',color:'primary', textDecoration: 'underline', fontWeight: 'bold' ,cursor:'pointer'}}
+                    onClick={handleToLoginPage}
                 >
                     Sign In
                 </Typography>
