@@ -1,5 +1,5 @@
 import React from 'react';
-import { Typography, Button, Container } from '@mui/material';
+import {Typography, Container, Button} from '@mui/material';
 
 const Home: React.FC = () => {
     return (
@@ -7,10 +7,9 @@ const Home: React.FC = () => {
             <Typography variant="h3" gutterBottom>
                 Home Page
             </Typography>
-            <Button variant="contained" color="primary">
-                Go to About
-            </Button>
+            <Button variant="contained">Hello world</Button>
         </Container>
+
     );
 };
 
