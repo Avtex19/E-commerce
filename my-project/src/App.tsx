@@ -1,16 +1,29 @@
 import React from 'react';
-import { Button, Typography, Container } from '@mui/material';
+import { Routes, Route, Link } from 'react-router-dom';
+import { Container, AppBar, Toolbar, Button } from '@mui/material';
+import Home from './components/Home';
+import About from './components/About';
 
 const App: React.FC = () => {
     return (
-        <Container>
-            <Typography variant="h3" gutterBottom>
-                Welcome to My Vite + React + TypeScript Project!
-            </Typography>
-            <Button variant="contained" color="primary">
-                Click Me
-            </Button>
-        </Container>
+        <>
+            <AppBar position="static">
+                <Toolbar>
+                    <Button color="inherit" component={Link} to="/">
+                        Home
+                    </Button>
+                    <Button color="inherit" component={Link} to="/about">
+                        About
+                    </Button>
+                </Toolbar>
+            </AppBar>
+            <Container>
+                <Routes>
+                    <Route path="/" element={<Home />} />
+                    <Route path="/about" element={<About />} />
+                </Routes>
+            </Container>
+        </>
     );
 };
 
