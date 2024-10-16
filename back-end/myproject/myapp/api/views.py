@@ -135,16 +135,18 @@ class UserLoginView(APIView):
 class CategoriesView(generics.ListAPIView):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
-    permission_classes = (IsAuthenticated,)
 
 
 class SubCategoriesView(generics.ListAPIView):
     queryset = SubCategory.objects.all()
     serializer_class = SubCategorySerializer
-    permission_classes = (IsAuthenticated,)
 
 
 class ProductView(generics.ListAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
-    permission_classes = (IsAuthenticated,)
+
+
+class ProductWithoutCategoryView(generics.ListAPIView):
+    queryset = Product.objects.all()
+    serializer_class = ProductSerializer
