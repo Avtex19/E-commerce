@@ -12,5 +12,6 @@ urlpatterns = [
     path('category/subcategory/',SubCategoriesView.as_view(), name="subcategory"),
     path('category/subcategory/product', ProductView.as_view(), name="product"),
     path('products/', ProductWithoutCategoryView.as_view(), name="productWithoutCategory"),
+    path('password/reset', UpdatePasswordView.as_view())
 
 ]
