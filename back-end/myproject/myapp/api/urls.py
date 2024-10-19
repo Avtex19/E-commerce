@@ -9,8 +9,7 @@ urlpatterns = [
     path('login/', UserLoginView.as_view(), name="login"),
     path('logout/', LogoutView.as_view(), name="logout"),
     path('category/',CategoriesView.as_view(), name="category"),
-    path('category/subcategory/',SubCategoriesView.as_view(), name="subcategory"),
-    path('category/subcategory/product', ProductView.as_view(), name="product"),
+    path('category/product', ProductView.as_view(), name="product"),
     path('products/', ProductWithoutCategoryView.as_view(), name="productWithoutCategory"),
     path('password/reset', UpdatePasswordView.as_view())
 

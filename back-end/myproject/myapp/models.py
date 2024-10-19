@@ -14,7 +14,7 @@ from django.db import models
 
 
 class Category(models.Model):
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=100,default='')
 
     def __str__(self):
         return self.name
@@ -23,24 +23,12 @@ class Category(models.Model):
         verbose_name_plural = 'Categories'
 
 
-class SubCategory(models.Model):
-    name = models.CharField(max_length=100)
-    category = models.ForeignKey(Category, related_name='subcategories', on_delete=models.CASCADE)
-
-    def __str__(self):
-        return self.name
-
-    class Meta:
-
-        verbose_name_plural = 'Subcategories'
-
-
 class Product(models.Model):
     name = models.CharField(max_length=100)
     description = models.TextField()
     price = models.FloatField()
     quantity = models.IntegerField()
-    subcategory = models.ForeignKey(SubCategory, related_name='products', on_delete=models.CASCADE)
+    category = models.ForeignKey(Category, related_name='products', on_delete=models.CASCADE)
     thumbnail = models.TextField(null=True, blank=True)
     additional_images = models.JSONField(null=True, blank=True)
 

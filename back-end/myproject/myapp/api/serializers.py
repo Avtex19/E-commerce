@@ -2,7 +2,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.password_validation import validate_password
 from rest_framework import serializers
 from django.contrib.auth import authenticate
-from ..models import Product, Category, SubCategory
+from ..models import Product, Category
 
 
 class RegisterUserSerializer(serializers.ModelSerializer):
@@ -50,17 +50,8 @@ class CategorySerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class SubCategorySerializer(serializers.ModelSerializer):
-    category = CategorySerializer()
-
-    class Meta:
-        model = SubCategory
-        fields = '__all__'
-
-
 class ProductSerializer(serializers.ModelSerializer):
-    category = serializers.CharField(source='subcategory.category.name')
-    subcategory = serializers.StringRelatedField()
+    category = serializers.StringRelatedField()
 
     class Meta:
         model = Product

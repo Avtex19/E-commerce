@@ -6,17 +6,24 @@ from rest_framework.decorators import api_view
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 from .serializers import RegisterUserSerializer, LoginUserSerializer, ProductSerializer, CategorySerializer, \
-    SubCategorySerializer, UpdatePasswordSerializer
+     UpdatePasswordSerializer
 from rest_framework import status, generics
 from django.contrib.auth import authenticate
 from drf_yasg import openapi
-from ..models import Product, Category, SubCategory
+from ..models import Product, Category
 
 
 @api_view(['GET'])
-def getRoutes():
+def getRoutes(request):
     routes = [
-        '',
+        '/register',
+        '/login',
+        '/logout',
+        '/password/reset',
+        '/category',
+        '/category/product',
+        '/products',
+
     ]
     return Response(routes)
 
@@ -154,10 +161,6 @@ class CategoriesView(generics.ListAPIView):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
 
-
-class SubCategoriesView(generics.ListAPIView):
-    queryset = SubCategory.objects.all()
-    serializer_class = SubCategorySerializer
 
 
 class ProductView(generics.ListAPIView):
