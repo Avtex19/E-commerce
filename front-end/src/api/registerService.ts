@@ -9,13 +9,14 @@ interface RegisterData {
     username: string;
     email: string;
     password: string;
-    password_confirmation: string;
+    password2: string;
 
 }
 
 export const register = async(data: RegisterData) => {
     try{
-        const response = await axiosInstance.post('api/register', data);
+        const response = await axiosInstance.post('api/register/', data);
+        console.log(response.data);
         return response.data;
     }
     catch(error:any){

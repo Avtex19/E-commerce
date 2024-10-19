@@ -12,7 +12,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onRegisterSuccess }) => {
     const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [passwordConfirmation, setPasswordConfirmation] = useState('');
+    const [password2, setPassword2] = useState('');
     const [error, setError] = useState<string | null>(null);
     const [successMessage, setSuccessMessage] = useState<string | null>(null);
     const navigate = useNavigate();
@@ -20,7 +20,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onRegisterSuccess }) => {
     const handleRegister = async (event: React.FormEvent) => {
         event.preventDefault();
 
-        const data = { username, email, password, password_confirmation: passwordConfirmation };
+        const data = { username, email, password, password2};
 
         try {
             await register(data);
@@ -119,8 +119,8 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onRegisterSuccess }) => {
                     variant="outlined"
                     fullWidth
                     margin="normal"
-                    value={passwordConfirmation}
-                    onChange={(e) => setPasswordConfirmation(e.target.value)}
+                    value={password2}
+                    onChange={(e) => setPassword2(e.target.value)}
                     required
                 />
                 <Button
