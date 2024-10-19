@@ -9,7 +9,7 @@
 # def create_auth_token(sender, instance=None, created=False, **kwargs):
 #     if created:
 #         Token.objects.create(user=instance)
-
+from django.contrib.auth.models import AbstractUser
 from django.db import models
 
 
@@ -37,3 +37,5 @@ class Product(models.Model):
 
     class Meta:
         verbose_name_plural = 'Products'
+
+
