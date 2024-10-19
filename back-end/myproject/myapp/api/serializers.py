@@ -30,6 +30,7 @@ class RegisterUserSerializer(serializers.ModelSerializer):
 class LoginUserSerializer(serializers.Serializer):
     username = serializers.CharField()
     password = serializers.CharField(write_only=True)
+    last_login = serializers.DateTimeField(read_only=True)
 
     def validate(self, attrs):
         username = attrs.get('username')
@@ -41,6 +42,8 @@ class LoginUserSerializer(serializers.Serializer):
             raise serializers.ValidationError('Invalid login credentials')
 
         attrs['user'] = user
+        attrs['last_login'] = user.last_login
+
         return attrs
 
 
@@ -80,6 +83,37 @@ class UpdatePasswordSerializer(serializers.Serializer):
         return value
 
     def update(self, instance, validated_data):
-        instance.set_password(validated_data['new_password'])
+        user = self.context['request'].user
+        user.set_password(validated_data['new_password'])
+        instance.save()
+        return instance
+
+
+class UpdateUsernameOrEmailSerializer(serializers.Serializer):
+    username = serializers.CharField(required=False, max_length=150)
+    email = serializers.EmailField(required=False)
+
+    def validate_email(self, value):
+        user = self.context['request'].user
+        if User.objects.exclude(id=user.id).filter(email=value).exists():
+            raise serializers.ValidationError({"email": "Email is already used."})
+        if user.email == value:
+            raise serializers.ValidationError({"email": "You are using the same email address."})
+        return value
+
+    def validate_username(self, value):
+        user = self.context['request'].user
+        if User.objects.exclude(id=user.id).filter(username=value).exists():
+            raise serializers.ValidationError({"username": "Username is already used."})
+        if user.username == value:
+            raise serializers.ValidationError({"username": "You are using the same username."})
+        return value
+
+    def update(self, instance, validated_data):
+        user = self.context['request'].user
+        if 'username' in validated_data:
+            user.username = validated_data['username']
+        if 'email' in validated_data:
+            user.email = validated_data['email']
         instance.save()
         return instance

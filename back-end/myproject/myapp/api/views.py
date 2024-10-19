@@ -6,9 +6,8 @@ from rest_framework.decorators import api_view
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 from .serializers import RegisterUserSerializer, LoginUserSerializer, ProductSerializer, CategorySerializer, \
-     UpdatePasswordSerializer
+    UpdatePasswordSerializer, UpdateUsernameOrEmailSerializer
 from rest_framework import status, generics
-from django.contrib.auth import authenticate
 from drf_yasg import openapi
 from ..models import Product, Category
 
@@ -120,7 +119,17 @@ class UserLoginView(APIView):
             required=['username', 'password']
         ),
         responses={
-            200: 'Tokens returned',
+            200: openapi.Response(
+                description="Tokens returned",
+                schema=openapi.Schema(
+                    type=openapi.TYPE_OBJECT,
+                    properties={
+                        'refresh': openapi.Schema(type=openapi.TYPE_STRING, description='Refresh Token'),
+                        'access': openapi.Schema(type=openapi.TYPE_STRING, description='Access Token'),
+                        'last_login': openapi.Schema(type=openapi.TYPE_STRING, description='Last Login Time'),
+                    }
+                )
+            ),
             401: 'Invalid credentials'
         }
     )
@@ -134,33 +143,118 @@ class UserLoginView(APIView):
 
             return Response({
                 'refresh': str(refresh),
-                'access': str(access_token)
+                'access': str(access_token),
+                'last_login': user.last_login.isoformat(),
             }, status=status.HTTP_200_OK)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class UpdatePasswordView(generics.UpdateAPIView):
-    serializer_class = UpdatePasswordSerializer
+class UpdateAccountView(generics.UpdateAPIView):
     permission_classes = (IsAuthenticated,)
     model = User
+    serializer_class = UpdatePasswordSerializer
 
+    @swagger_auto_schema(
+        operation_description="Update the user's account information (username, email, or password).",
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={
+                'username': openapi.Schema(
+                    type=openapi.TYPE_STRING,
+                    description="New username",
+                    example="new_username"
+                ),
+                'email': openapi.Schema(
+                    type=openapi.TYPE_STRING,
+                    description="New email",
+                    example="new_email@example.com"
+                ),
+                'old_password': openapi.Schema(
+                    type=openapi.TYPE_STRING,
+                    description="Old password (if updating password)",
+                    example="old_password_value"
+                ),
+                'new_password': openapi.Schema(
+                    type=openapi.TYPE_STRING,
+                    description="New password (if updating password)",
+                    example="new_password_value"
+                ),
+            },
+            required=['username', 'email', 'old_password', 'new_password'],
+        ),
+        responses={
+            200: openapi.Response(
+                description="Account updated successfully",
+                schema=openapi.Schema(
+                    type=openapi.TYPE_OBJECT,
+                    properties={
+                        'detail': openapi.Schema(
+                            type=openapi.TYPE_STRING,
+                            example="Account updated successfully."
+                        )
+                    }
+                )
+            ),
+            400: openapi.Response(
+                description="Bad request (validation error or missing fields)",
+                schema=openapi.Schema(
+                    type=openapi.TYPE_OBJECT,
+                    properties={
+                        'detail': openapi.Schema(
+                            type=openapi.TYPE_STRING,
+                            example="No valid fields provided."
+                        )
+                    }
+                )
+            ),
+        }
+    )
     def get_object(self, queryset=None):
         return self.request.user
 
     def update(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
+        if 'username' in request.data or 'email' in request.data:
+            serializer = UpdateUsernameOrEmailSerializer(data=request.data, context={'request': request})
+        elif 'old_password' in request.data:
+            serializer = UpdatePasswordSerializer(data=request.data, context={'request': request})
+        else:
+            return Response({"detail": "No valid fields provided."}, status=status.HTTP_400_BAD_REQUEST)
+
         if serializer.is_valid():
-            self.get_object().set_password(serializer.validated_data['new_password'])
-            self.get_object().save()
-            return Response({"detail": "Password updated successfully."}, status=status.HTTP_200_OK)
+            self.perform_update(self.get_object(), serializer)
+            return Response({"detail": "Account updated successfully."}, status=status.HTTP_200_OK)
+
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def perform_update(self, user, serializer):
+        validated_data = serializer.validated_data
+        if 'new_password' in validated_data:
+            user.set_password(validated_data['new_password'])
+        if 'email' in validated_data:
+            user.email = validated_data['email']
+        if 'username' in validated_data:
+            user.username = validated_data['username']
+        user.save()
+
+    def put(self, request, *args, **kwargs):
+        return self.update(request, *args, **kwargs)
+
+    @swagger_auto_schema(request_body=openapi.Schema(type=openapi.TYPE_OBJECT, properties={
+        'username': openapi.Schema(type=openapi.TYPE_STRING, description="New username", example="new_username"),
+        'email': openapi.Schema(type=openapi.TYPE_STRING, description="New email", example="new_email@example.com"),
+        'old_password': openapi.Schema(type=openapi.TYPE_STRING, description="Old password",
+                                       example="old_password_value"),
+        'new_password': openapi.Schema(type=openapi.TYPE_STRING, description="New password",
+                                       example="new_password_value"),
+    }))
+    def patch(self, request, *args, **kwargs):
+        return self.update(request, *args, **kwargs)
 
 
 class CategoriesView(generics.ListAPIView):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
-
 
 
 class ProductView(generics.ListAPIView):
