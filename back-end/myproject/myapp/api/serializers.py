@@ -54,7 +54,9 @@ class CategorySerializer(serializers.ModelSerializer):
 
 
 class ProductSerializer(serializers.ModelSerializer):
-    category = serializers.StringRelatedField()
+    category = serializers.PrimaryKeyRelatedField(queryset=Category.objects.all())
+
+    #So we used PrimaryKeyRelatedField in order to create product and connect it to category with its id
 
     class Meta:
         model = Product

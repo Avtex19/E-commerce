@@ -10,6 +10,7 @@ from .serializers import RegisterUserSerializer, LoginUserSerializer, ProductSer
 from rest_framework import status, generics
 from drf_yasg import openapi
 from ..models import Product, Category
+from rest_framework.permissions import IsAdminUser
 
 
 @api_view(['GET'])
@@ -265,3 +266,8 @@ class ProductView(generics.ListAPIView):
 class ProductWithoutCategoryView(generics.ListAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
+
+
+class createProduct(generics.CreateAPIView):
+    serializer_class = ProductSerializer
+    permission_classes = [IsAdminUser]
