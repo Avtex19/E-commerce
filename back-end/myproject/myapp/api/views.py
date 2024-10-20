@@ -1,3 +1,5 @@
+from django.utils import timezone
+
 from django.contrib.auth.models import User
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework.permissions import IsAuthenticated
@@ -141,11 +143,13 @@ class UserLoginView(APIView):
             user = serializer.validated_data['user']
             refresh = RefreshToken.for_user(user)
             access_token = refresh.access_token
+            user.last_login = timezone.now()
+            user.save(update_fields=['last_login'])
 
             return Response({
                 'refresh': str(refresh),
                 'access': str(access_token),
-                'last_login': user.last_login.isoformat(),
+                'last_login': user.last_login
             }, status=status.HTTP_200_OK)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
