@@ -9,7 +9,7 @@ from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 from .serializers import RegisterUserSerializer, LoginUserSerializer, ProductSerializer, CategorySerializer, \
     UpdatePasswordSerializer, UpdateUsernameOrEmailSerializer
-from rest_framework import status, generics, viewsets
+from rest_framework import status, generics, viewsets,filters
 from drf_yasg import openapi
 from ..models import Product, Category
 from rest_framework.permissions import IsAdminUser
@@ -265,10 +265,10 @@ class CategoriesView(generics.ListAPIView):
 class ProductViewSet(viewsets.ModelViewSet):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['name']
 
     def get_permissions(self):
         if self.action not in ['list', 'retrieve']:
             return [IsAdminUser()]
         return super().get_permissions()
-
-
