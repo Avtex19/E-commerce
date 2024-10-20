@@ -27,7 +27,7 @@ class Product(models.Model):
     name = models.CharField(max_length=100)
     description = models.TextField()
     price = models.FloatField()
-    quantity = models.IntegerField()
+    quantity = models.PositiveIntegerField()
     category = models.ForeignKey(Category, related_name='products', on_delete=models.CASCADE)
     thumbnail = models.TextField(null=True, blank=True)
     additional_images = models.JSONField(null=True, blank=True)
