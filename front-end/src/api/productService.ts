@@ -6,9 +6,13 @@ const axiosInstance = axios.create({
     baseURL: base_url,
 });
 
-export const products = async (page?: string | null) => {
+export const products = async (page?: string | null, searchQuery?: string) => {
     try {
-        const response = await axiosInstance.get(`/api/products?page=${page}`);
+        const url = searchQuery
+            ? `/api/products?page=${page}&search=${searchQuery}`
+            : `/api/products?page=${page}`;
+
+        const response = await axiosInstance.get(url);
         return response.data;
     } catch (error: any) {
         return error;
