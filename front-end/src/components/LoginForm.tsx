@@ -23,7 +23,7 @@ const LoginForm: React.FC<LoginFormProps> = ({ onLoginSuccess }) => {
             setSuccessMessage('Login successful!');
             setError(null);
             onLoginSuccess(tokens);
-            navigate('/')
+            navigate('/');
         } catch (err: any) {
             setError(err.message);
             setSuccessMessage(null);
@@ -111,15 +111,14 @@ const LoginForm: React.FC<LoginFormProps> = ({ onLoginSuccess }) => {
                 </Button>
             </form>
 
-            <Typography variant="body2" sx={{ marginTop: 2,}} >
+            <Typography variant="body2" sx={{ marginTop: 2 }}>
                 Don't have an account?{' '}
-                <Typography
-                    variant="body2"
+                <span
                     onClick={handleToRegisterPage}
-                    sx={{ display: 'inline', textDecoration: 'underline', fontWeight: 'bold',cursor:'pointer', }}
+                    style={{ textDecoration: 'underline', fontWeight: 'bold', cursor: 'pointer' }}
                 >
                     Sign up
-                </Typography>
+                </span>
             </Typography>
         </Box>
     );
