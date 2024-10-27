@@ -119,3 +119,9 @@ class UpdateUsernameOrEmailSerializer(serializers.Serializer):
             user.email = validated_data['email']
         instance.save()
         return instance
+
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('is_superuser', 'username', 'email')
