@@ -128,6 +128,17 @@ const CreateProductModal: React.FC<CreateProductModalProps> = ({ open, onClose }
                     type="number"
                     value={price}
                     onChange={(e) => setPrice(Number(e.target.value))}
+                    sx={{
+                        '& input[type="number"]': {
+                            '-moz-appearance': 'textfield',
+                            '::-webkit-outer-spin-button': {
+                                display: 'none',
+                            },
+                            '::-webkit-inner-spin-button': {
+                                display: 'none',
+                            },
+                        },
+                    }}
                 />
                 <TextField
                     label="Quantity"
@@ -137,7 +148,19 @@ const CreateProductModal: React.FC<CreateProductModalProps> = ({ open, onClose }
                     type="number"
                     value={quantity}
                     onChange={(e) => setQuantity(Number(e.target.value))}
+                    sx={{
+                        '& input[type="number"]': {
+                            '-moz-appearance': 'textfield',
+                            '::-webkit-outer-spin-button': {
+                                display: 'none',
+                            },
+                            '::-webkit-inner-spin-button': {
+                                display: 'none',
+                            },
+                        },
+                    }}
                 />
+
                 <TextField
                     label="Thumbnail URL"
                     variant="outlined"
