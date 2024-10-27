@@ -15,5 +15,6 @@ urlpatterns = [
     path('category/',CategoriesView.as_view(), name="category"),
     # path('products/', ProductWithoutCategoryView.as_view(), name="productWithoutCategory"),
     path('account/update', UpdateAccountView.as_view()),
+    path('user/info/', UserViewSet.as_view({'get': 'retrieve'}), name='user_info'),
     *router.urls,
 ]

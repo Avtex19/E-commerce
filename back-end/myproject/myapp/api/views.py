@@ -1,5 +1,4 @@
 from django.utils import timezone
-
 from django.contrib.auth.models import User
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework.permissions import IsAuthenticated
@@ -7,9 +6,10 @@ from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
+
 from .serializers import RegisterUserSerializer, LoginUserSerializer, ProductSerializer, CategorySerializer, \
-    UpdatePasswordSerializer, UpdateUsernameOrEmailSerializer
-from rest_framework import status, generics, viewsets,filters
+    UpdatePasswordSerializer, UpdateUsernameOrEmailSerializer, UserSerializer
+from rest_framework import status, generics, viewsets, filters
 from drf_yasg import openapi
 from ..models import Product, Category
 from rest_framework.permissions import IsAdminUser
@@ -272,3 +272,22 @@ class ProductViewSet(viewsets.ModelViewSet):
         if self.action not in ['list', 'retrieve']:
             return [IsAdminUser()]
         return super().get_permissions()
+
+
+class UserViewSet(viewsets.ViewSet):
+    permission_classes = (IsAuthenticated,)
+
+    @swagger_auto_schema(
+        operation_description="Retrieve the authenticated user's information.",
+        responses={
+            200: openapi.Response(
+                description="User information retrieved successfully.",
+                schema=UserSerializer,
+            ),
+            401: "Unauthorized (Token is invalid or missing)",
+        }
+    )
+    def retrieve(self, request):
+        user = request.user
+        serializer = UserSerializer(user)
+        return Response(serializer.data)
