@@ -1,30 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import {
-    AppBar,
-    Toolbar,
-    Box,
     Grid,
     Pagination,
-    TextField,
     CircularProgress,
     Card,
     CardContent,
     CardMedia,
-    IconButton,
-    InputAdornment,
-    Avatar,
-    Menu,
-    MenuItem,
-    Typography,
+    Typography, Box,
 } from '@mui/material';
-import SearchIcon from '@mui/icons-material/Search';
-import ClearIcon from '@mui/icons-material/Clear';
 import { fetchProducts } from "../api/productService.ts";
 import { logout } from "../api/logoutService.ts";
 import {useLocation, useNavigate} from 'react-router-dom';
 import logo from '../../logo.png';
 import CreateProductModal from "../components/createProductModal.tsx";
-import AddIcon from '@mui/icons-material/Add';
+import AppBarComponent from "../components/AppBarComponent.tsx";
 
 const ProductsPage: React.FC = () => {
     const [products, setProducts] = useState<any[]>([]);
@@ -128,86 +117,30 @@ const ProductsPage: React.FC = () => {
         const words = text.split(' ');
         return words.length > wordLimit ? words.slice(0, wordLimit).join(' ') + '...' : text;
     };
+    const handleCardClick = (productId: number) => {
+        navigate(`/products/${productId}`);
+    };
+
+
 
 
     return (
         <Box>
-            <AppBar position="static" sx={{ backgroundColor: '#FF8C00' }}>
-                <Toolbar>
-                    <img src={logo} alt="Logo" style={{ height: '60px', marginRight: '16px' }} />
-
-                    <Box sx={{ flexGrow: 1, display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}>
-                        <Box sx={{ position: 'relative', width: '300px', marginRight: '16px' }}>
-                            <TextField
-                                placeholder="Search Products"
-                                variant="outlined"
-                                size="small"
-                                value={searchQuery}
-                                onChange={handleSearchChange}
-                                sx={{
-                                    backgroundColor: 'white',
-                                    borderRadius: '20px',
-                                    '& .MuiOutlinedInput-root': {
-                                        borderRadius: '20px',
-                                    },
-                                }}
-                                InputProps={{
-                                    endAdornment: (
-                                        <InputAdornment position="end">
-                                            {searchQuery && (
-                                                <IconButton onClick={clearSearch} sx={{ padding: '5px' }}>
-                                                    <ClearIcon />
-                                                </IconButton>
-                                            )}
-                                            <IconButton>
-                                                <SearchIcon />
-                                            </IconButton>
-                                        </InputAdornment>
-                                    ),
-                                }}
-                            />
-                        </Box>
-
-                        {isAdmin && (
-                            <IconButton
-                                color="secondary"
-                                onClick={() => setIsModalOpen(true)}
-                                sx={{
-                                    backgroundColor: '#0a7044',
-                                    borderRadius: '50%',
-                                    width: '28px',
-                                    height: '28px',
-                                    marginRight: '16px',
-                                    '&:hover': {
-                                        backgroundColor: '#005b08',
-                                    },
-                                }}
-                            >
-                                <AddIcon sx={{ color: 'white', fontSize: '24px' }} />
-                            </IconButton>
-                        )}
-
-                        <IconButton onClick={handleAvatarClick} color="inherit">
-                            <Avatar alt="User Avatar" />
-                        </IconButton>
-                        <Menu
-                            anchorEl={anchorEl}
-                            open={Boolean(anchorEl)}
-                            onClose={handleMenuClose}
-                        >
-                            {isLoggedIn
-                                ? [
-                                    <MenuItem key="account" onClick={() => navigate('/account')}>Account Details</MenuItem>,
-                                    <MenuItem key="logout" onClick={handleLogout}>Logout</MenuItem>
-                                ]
-                                : <MenuItem onClick={() => navigate('/login')}>Login</MenuItem>
-                            }
-                        </Menu>
-                    </Box>
-                </Toolbar>
-            </AppBar>
-
-
+            <AppBarComponent
+                logo={logo}
+                isAdmin={isAdmin}
+                searchQuery={searchQuery}
+                onSearchChange={handleSearchChange}
+                clearSearch={clearSearch}
+                handleAvatarClick={handleAvatarClick}
+                anchorEl={anchorEl}
+                handleMenuClose={handleMenuClose}
+                isLoggedIn={isLoggedIn}
+                handleLogout={handleLogout}
+                setIsModalOpen={setIsModalOpen}
+                navigate={navigate}
+                isProductPage={false}
+            />
 
             <Box sx={{ padding: '20px' }}>
                 {loading ? (
@@ -217,7 +150,16 @@ const ProductsPage: React.FC = () => {
                         <Grid container spacing={4}>
                             {products.map((product) => (
                                 <Grid item xs={12} sm={6} md={4} key={product.id}>
-                                    <Card sx={{ maxWidth: 400, height: '100%' }}>
+                                    <Card sx={{
+                                        maxWidth: 400,
+                                        height: '100%',
+                                        transition: 'transform 0.2s, box-shadow 0.2s',
+                                        '&:hover': {
+                                            transform: 'scale(1.05)',
+                                            boxShadow: '0 4px 20px rgba(0,0,0,0.2)',
+                                        },
+                                    }}onClick={() => handleCardClick(product.id)}
+                                    >
                                         <CardMedia
                                             component="img"
                                             height="200"
