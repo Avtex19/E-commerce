@@ -13,8 +13,7 @@ urlpatterns = [
     path('login/', UserLoginView.as_view(), name="login"),
     path('logout/', LogoutView.as_view(), name="logout"),
     path('categories/',CategoriesView.as_view(), name="category"),
-    # path('products/', ProductWithoutCategoryView.as_view(), name="productWithoutCategory"),
-    path('account/update', UpdateAccountView.as_view()),
+    path('account/update/', AccountUpdateView.as_view(), name='account-update'),
     path('user/info/', UserViewSet.as_view({'get': 'retrieve'}), name='user_info'),
     *router.urls,
 ]
