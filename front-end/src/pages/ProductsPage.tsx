@@ -21,7 +21,7 @@ import SearchIcon from '@mui/icons-material/Search';
 import ClearIcon from '@mui/icons-material/Clear';
 import { fetchProducts } from "../api/productService.ts";
 import { logout } from "../api/logoutService.ts";
-import { useNavigate } from 'react-router-dom';
+import {useLocation, useNavigate} from 'react-router-dom';
 import logo from '../../logo.png';
 import CreateProductModal from "../components/createProductModal.tsx";
 import AddIcon from '@mui/icons-material/Add';
@@ -39,6 +39,21 @@ const ProductsPage: React.FC = () => {
     const token = localStorage.getItem('authTokens') || '';
 
     const navigate = useNavigate();
+    const location = useLocation();
+
+
+    useEffect(() => {
+        const params = new URLSearchParams(location.search);
+        const pageParam = params.get('page');
+        const searchParam = params.get('search');
+
+        if (pageParam) {
+            setPage(Number(pageParam));
+        }
+        if (searchParam) {
+            setSearchQuery(searchParam);
+        }
+    }, [location.search]);
 
     useEffect(() => {
         const loadProducts = async () => {
@@ -56,6 +71,16 @@ const ProductsPage: React.FC = () => {
 
         loadProducts();
     }, [page, searchQuery]);
+
+    useEffect(() => {
+        const params = new URLSearchParams();
+        params.set('page', String(page));
+        if (searchQuery) {
+            params.set('search', searchQuery);
+        }
+        navigate(`?${params.toString()}`, { replace: true });
+    }, [page, searchQuery, navigate]);
+
 
     useEffect(() => {
         const adminStatus = localStorage.getItem('isAdmin') === 'true';
