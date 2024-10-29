@@ -14,20 +14,12 @@ interface Product {
     price: number;
     quantity: number;
     thumbnail: string;
-    additional_images: Record<string, any>; // Adjust the type based on the structure of additional_images
+    additional_images: Record<string, any>;
 }
 
 export const getProductDetails = async (id: number): Promise<Product | null> => {
     try {
-        const tokens = JSON.parse(localStorage.getItem('authTokens') || '{}');
-        const accessToken = tokens.access;
-
-        const response = await axiosInstance.get<Product>(`/api/products/${id}/`, {
-            headers: {
-                Authorization: `Bearer ${accessToken}`,
-            },
-        });
-
+        const response = await axiosInstance.get<Product>(`/api/products/${id}/`);
         console.log('Product details fetched:', response.data);
         return response.data;
     } catch (error: any) {
