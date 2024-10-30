@@ -13,7 +13,6 @@ import {
 import SearchIcon from '@mui/icons-material/Search';
 import AddIcon from '@mui/icons-material/Add';
 import logo from '../../logo.png';
-import HomeIcon from '@mui/icons-material/Home';
 
 
 interface AppBarComponentProps {
@@ -49,14 +48,10 @@ const AppBarComponent: React.FC<AppBarComponentProps> = ({
     return (
         <AppBar position="static" sx={{ backgroundColor: '#FF8C00' }}>
             <Toolbar>
-                <img src={logo} alt="Logo" style={{ height: '60px', marginRight: '16px' }} />
+                <img src={logo} alt="Logo" style={{ height: '60px', marginRight: '16px',cursor:'pointer' }}  onClick={() => navigate('/')} />
 
                 <Box sx={{ flexGrow: 1, display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}>
-                    {isProductPage && (
-                        <IconButton onClick={() => navigate('/')} color="inherit" sx={{ marginRight: '16px' }}>
-                            <HomeIcon />
-                        </IconButton>
-                    )}
+
 
                     {!isProductPage && (
                         <Box sx={{ position: 'relative', width: '300px', marginRight: '16px' }}>

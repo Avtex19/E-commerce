@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { CircularProgress, Typography, IconButton, Snackbar, Alert } from '@mui/material';
+import { CircularProgress, Typography, Snackbar, Alert } from '@mui/material';
 import { getProductDetails } from "../api/getProductDetails";
 import { deleteProduct } from "../api/deleteProduct";
 import ProductCard from "../components/productCard";
@@ -84,12 +84,6 @@ const ProductDetails: React.FC = () => {
                 setIsModalOpen={() => {}}
                 isProductPage={true}
             />
-            <IconButton
-                aria-label="home"
-                onClick={() => navigate('/')}
-                sx={{ position: 'absolute', top: 16, left: 16 }}
-            >
-            </IconButton>
 
             <ProductCard product={product} onDelete={handleDelete} />
 
