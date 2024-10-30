@@ -5,6 +5,7 @@ import { getProductDetails } from "../api/getProductDetails";
 import ProductCard from "../components/productCard";
 import AppBarComponent from '../components/AppBarComponent';
 import logo from "../../logo.png";
+import useAuth from '../hooks/useAuth';
 
 const ProductDetails: React.FC = () => {
     const { id } = useParams<{ id: string }>();
@@ -12,9 +13,8 @@ const ProductDetails: React.FC = () => {
     const [product, setProduct] = useState<any>(null);
     const [loading, setLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
-    const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-    const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem('authTokens'));
-    const [isAdmin, setIsAdmin] = useState<boolean>(false);
+
+    const { isLoggedIn, isAdmin, anchorEl, handleAvatarClick, handleMenuClose, handleLogout } = useAuth();
 
     useEffect(() => {
         const fetchProductDetails = async () => {
@@ -25,27 +25,6 @@ const ProductDetails: React.FC = () => {
 
         fetchProductDetails();
     }, [id]);
-
-    useEffect(() => {
-        const adminStatus = localStorage.getItem('isAdmin') === 'true';
-        setIsAdmin(adminStatus);
-    }, [isLoggedIn]);
-
-    const handleAvatarClick = (event: React.MouseEvent<HTMLElement>) => {
-        setAnchorEl(event.currentTarget);
-    };
-
-    const handleMenuClose = () => {
-        setAnchorEl(null);
-    };
-
-    const handleLogout = () => {
-        localStorage.removeItem('authTokens');
-        localStorage.removeItem('isAdmin');
-        setIsLoggedIn(false);
-        setIsAdmin(false);
-        handleMenuClose();
-    };
 
     const onSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSearchQuery(e.target.value);
@@ -85,6 +64,7 @@ const ProductDetails: React.FC = () => {
                 onClick={() => navigate('/')}
                 sx={{ position: 'absolute', top: 16, left: 16 }}
             >
+
             </IconButton>
             <ProductCard product={product} />
         </div>
