@@ -13,7 +13,7 @@ interface Product {
     price: number;
     quantity: number;
     thumbnail: string;
-    additional_images: Record<string, any>;
+    additional_images: string[];
 }
 
 export const createProduct = async (productData: Product): Promise<Product | null> => {
