@@ -10,6 +10,7 @@ import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import ImageModal from "./imageModal.tsx";
 import { getCategories } from '../api/getCategories';
+import DeleteIcon from "@mui/icons-material/Delete";
 
 interface Product {
     id: number;
@@ -24,9 +25,11 @@ interface Product {
 
 interface ProductCardProps {
     product: Product;
+    onDelete: (id: number) => Promise<void>;
+
 }
 
-const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
+const ProductCard: React.FC<ProductCardProps> = ({ product,onDelete }) => {
     const [categories, setCategories] = useState<{ id: number; name: string }[]>([]);
     const [categoryName, setCategoryName] = useState<string>('');
     const isAdmin = JSON.parse(localStorage.getItem('isAdmin') || 'false');
@@ -71,6 +74,11 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
 
     const handlePrevImage = () => {
         setMainImageIndex((prevIndex) => (prevIndex - 1 + allImages.length) % allImages.length);
+    };
+    const handleDelete = async () => {
+        if (window.confirm("Are you sure you want to delete this product?")) {
+            await onDelete(product.id);
+        }
     };
 
     return (
@@ -143,6 +151,15 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
                     <Typography variant="h4" sx={{ fontWeight: 'bold', marginBottom: '8px' }}>
                         {product.name}
                     </Typography>
+                    {isAdmin && (
+                        <IconButton
+                            aria-label="delete"
+                            onClick={handleDelete}
+                            color="error"
+                        >
+                            <DeleteIcon />
+                        </IconButton>
+                    )}
                     <Typography variant="subtitle1" color="text.secondary" sx={{ marginBottom: '8px' }}>
                         Category: {categoryName}
                     </Typography>
