@@ -9,11 +9,11 @@ import {
     MenuItem,
     TextField,
     InputAdornment,
+    Badge,
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import AddIcon from '@mui/icons-material/Add';
-import logo from '../../logo.png';
-
+import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 
 interface AppBarComponentProps {
     logo: string;
@@ -29,9 +29,11 @@ interface AppBarComponentProps {
     navigate: (path: string) => void;
     setIsModalOpen: (open: boolean) => void;
     isProductPage?: boolean;
+    cartItemCount?: number;
 }
 
 const AppBarComponent: React.FC<AppBarComponentProps> = ({
+                                                             logo,
                                                              searchQuery,
                                                              onSearchChange,
                                                              clearSearch,
@@ -43,79 +45,133 @@ const AppBarComponent: React.FC<AppBarComponentProps> = ({
                                                              isLoggedIn,
                                                              navigate,
                                                              setIsModalOpen,
-                                                             isProductPage = false
+                                                             isProductPage = false,
+                                                             cartItemCount = 0,
                                                          }) => {
     return (
-        <AppBar position="static" sx={{ backgroundColor: '#FF8C00' }}>
-            <Toolbar>
-                <img src={logo} alt="Logo" style={{ height: '60px', marginRight: '16px',cursor:'pointer' }}  onClick={() => navigate('/')} />
+        <AppBar position="static" sx={{ backgroundColor: '#000000' }}>
+            <Toolbar sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                <Box
+                    component="img"
+                    src={logo}
+                    alt="Logo"
+                    sx={{ height: 80,width:120, cursor: 'pointer' }}
+                    onClick={() => navigate('/')}
+                />
 
-                <Box sx={{ flexGrow: 1, display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}>
-
-
+                <Box sx={{ flexGrow: 1, display: 'flex', justifyContent: 'center' }}>
                     {!isProductPage && (
-                        <Box sx={{ position: 'relative', width: '300px', marginRight: '16px' }}>
-                            <TextField
-                                placeholder="Search Products"
-                                variant="outlined"
-                                size="small"
-                                value={searchQuery}
-                                onChange={onSearchChange}
-                                sx={{
-                                    backgroundColor: 'white',
-                                    borderRadius: '20px',
-                                    '& .MuiOutlinedInput-root': {
-                                        borderRadius: '20px',
+                        <TextField
+                            placeholder="Search Products"
+                            variant="outlined"
+                            size="small"
+                            value={searchQuery}
+                            onChange={onSearchChange}
+                            sx={{
+                                width: '300px',
+                                backgroundColor: '#ffffff',
+                                borderRadius: '20px',
+                                '& .MuiOutlinedInput-root': {
+                                    '& fieldset': {
+                                        borderColor: 'gray',
                                     },
-                                }}
-                                InputProps={{
-                                    endAdornment: (
-                                        <InputAdornment position="end">
-                                            {searchQuery && (
-                                                <IconButton onClick={clearSearch} sx={{ padding: '5px' }}>
-                                                </IconButton>
-                                            )}
-                                            <IconButton>
-                                                <SearchIcon />
+                                    borderRadius: '20px',
+                                },
+                            }}
+                            InputProps={{
+                                endAdornment: (
+                                    <InputAdornment position="end">
+                                        {searchQuery && (
+                                            <IconButton onClick={clearSearch} sx={{ padding: '5px', color: 'black' }}>
+                                                X
                                             </IconButton>
-                                        </InputAdornment>
-                                    ),
-                                }}
-                            />
-                        </Box>
+                                        )}
+                                        <IconButton sx={{ color: 'black' }}>
+                                            <SearchIcon />
+                                        </IconButton>
+                                    </InputAdornment>
+                                ),
+                            }}
+                        />
                     )}
+                </Box>
+
+                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                        <IconButton
+                            color="inherit"
+                            sx={{
+                                mr: 2,
+                                '&:hover': {
+                                    backgroundColor: '#333333',
+                                    borderRadius: '50%',
+                                },
+                            }}
+                            onClick={() => navigate('/cart')}
+                        >
+                            <Badge badgeContent={cartItemCount} color="error">
+                                <ShoppingCartIcon sx={{ fontSize: 24, color: 'white' }} />
+                            </Badge>
+                        </IconButton>
+
 
                     {!isProductPage && isAdmin && (
                         <IconButton
-                            color="secondary"
+                            color="inherit"
                             onClick={() => setIsModalOpen(true)}
                             sx={{
-                                backgroundColor: '#0a7044',
+                                backgroundColor: '#444444',
                                 borderRadius: '50%',
-                                width: '28px',
-                                height: '28px',
-                                marginRight: '16px',
+                                width: 36,
+                                height: 36,
+                                marginRight: 2,
                                 '&:hover': {
-                                    backgroundColor: '#005b08',
+                                    backgroundColor: '#555555',
                                 },
                             }}
                         >
-                            <AddIcon sx={{ color: 'white', fontSize: '24px' }} />
+                            <AddIcon sx={{ color: 'white', fontSize: 20 }} />
                         </IconButton>
                     )}
 
-                    <IconButton onClick={handleAvatarClick} color="inherit">
-                        <Avatar alt="User Avatar" />
+                    <IconButton
+                        onClick={handleAvatarClick}
+                        sx={{
+                            ml: 1,
+                            '&:hover': {
+                                backgroundColor: '#666666',
+                                borderRadius: '50%',
+                            },
+                        }}
+                    >
+                        <Avatar alt="User Avatar" sx={{ backgroundColor: '#555555', color: 'white' }}>
+                            {/* You can replace this with initials or an image */}
+                        </Avatar>
                     </IconButton>
-                    <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleMenuClose}>
-                        {isLoggedIn ? [
-                            <MenuItem key="account" onClick={() => navigate('/account')}>Account Details</MenuItem>,
-                            <MenuItem key="logout" onClick={handleLogout}>Logout</MenuItem>
-                        ] : (
-                            <MenuItem onClick={() => navigate('/login')}>Login</MenuItem>
+
+                    <Menu
+                        anchorEl={anchorEl}
+                        open={Boolean(anchorEl)}
+                        onClose={handleMenuClose}
+                        sx={{
+                            '& .MuiPaper-root': {
+                                mt: 1.5,
+                                backgroundColor: '#333333',
+                                color: 'white',
+                                boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+                                borderRadius: '8px',
+                                minWidth: '180px',
+                            },
+                        }}
+                    >
+                        {isLoggedIn ? (
+                            <>
+                                <MenuItem onClick={() => navigate('/account')} sx={{ color: 'white' }}>Account Details</MenuItem>
+                                <MenuItem onClick={handleLogout} sx={{ color: 'white' }}>Logout</MenuItem>
+                            </>
+                        ) : (
+                            <MenuItem onClick={() => navigate('/login')} sx={{ color: 'white' }}>Login</MenuItem>
                         )}
                     </Menu>
-
                 </Box>
             </Toolbar>
         </AppBar>
