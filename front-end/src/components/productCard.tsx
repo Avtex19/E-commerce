@@ -11,6 +11,7 @@ import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import ImageModal from "./imageModal.tsx";
 import { getCategories } from '../api/getCategories';
 import DeleteIcon from "@mui/icons-material/Delete";
+import EditProductModal from "./editProductModal.tsx";
 
 interface Product {
     id: number;
@@ -27,6 +28,7 @@ interface ProductCardProps {
     product: Product;
     onDelete: (id: number) => Promise<void>;
 
+
 }
 
 const ProductCard: React.FC<ProductCardProps> = ({ product,onDelete }) => {
@@ -41,6 +43,8 @@ const ProductCard: React.FC<ProductCardProps> = ({ product,onDelete }) => {
     const visibleImagesCount = 4;
 
     const [modalOpen, setModalOpen] = useState(false);
+    const [editModalOpen, setEditModalOpen] = useState(false);
+
 
     useEffect(() => {
         const fetchCategories = async () => {
@@ -52,6 +56,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product,onDelete }) => {
 
         fetchCategories();
     }, []);
+
 
     useEffect(() => {
         if (categories.length > 0) {
@@ -67,6 +72,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product,onDelete }) => {
             setCarouselIndex(mainImageIndex - visibleImagesCount + 1);
         }
     }, [mainImageIndex]);
+
 
     const handleNextImage = () => {
         setMainImageIndex((prevIndex) => (prevIndex + 1) % allImages.length);
@@ -148,18 +154,21 @@ const ProductCard: React.FC<ProductCardProps> = ({ product,onDelete }) => {
                 </Grid>
 
                 <Grid item xs={12} sm={7} md={8}>
-                    <Typography variant="h4" sx={{ fontWeight: 'bold', marginBottom: '8px' }}>
-                        {product.name}
-                    </Typography>
-                    {isAdmin && (
-                        <IconButton
-                            aria-label="delete"
-                            onClick={handleDelete}
-                            color="error"
-                        >
-                            <DeleteIcon />
-                        </IconButton>
-                    )}
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <Typography variant="h4" sx={{ fontWeight: 'bold', marginBottom: '8px' }}>
+                            {product.name}
+                        </Typography>
+                        {isAdmin && (
+                            <IconButton
+                                aria-label="delete"
+                                onClick={handleDelete}
+                                color="error"
+                            >
+                                <DeleteIcon sx={{ fontSize: '2rem' }}/>
+                            </IconButton>
+                        )}
+                    </Box>
+
                     <Typography variant="subtitle1" color="text.secondary" sx={{ marginBottom: '8px' }}>
                         Category: {categoryName}
                     </Typography>
@@ -202,7 +211,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product,onDelete }) => {
                     {isAdmin && (
                         <Button
                             variant="outlined"
-                            color="secondary"
+                            color="primary"
                             size="large"
                             sx={{
                                 paddingX: '24px',
@@ -211,6 +220,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product,onDelete }) => {
                                 textTransform: 'uppercase',
                                 fontWeight: 'bold',
                             }}
+                            onClick={() => setEditModalOpen(true)}
                         >
                             Edit
                         </Button>
@@ -222,6 +232,11 @@ const ProductCard: React.FC<ProductCardProps> = ({ product,onDelete }) => {
                 open={modalOpen}
                 onClose={() => setModalOpen(false)}
                 images={allImages}
+            />
+            <EditProductModal
+                open={editModalOpen}
+                onClose={() => setEditModalOpen(false)}
+                product={product}
             />
         </>
     );

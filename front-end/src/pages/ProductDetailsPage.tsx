@@ -5,7 +5,7 @@ import { getProductDetails } from "../api/getProductDetails";
 import { deleteProduct } from "../api/deleteProduct";
 import ProductCard from "../components/productCard";
 import AppBarComponent from '../components/AppBarComponent';
-import logo from "../../logo.png";
+import logo from "../../logo1.png";
 import useAuth from '../hooks/useAuth';
 
 const ProductDetails: React.FC = () => {

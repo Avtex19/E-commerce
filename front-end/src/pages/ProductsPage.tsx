@@ -11,7 +11,7 @@ import {
 } from '@mui/material';
 import { fetchProducts } from '../api/productService.ts';
 import { useLocation, useNavigate } from 'react-router-dom';
-import logo from '../../logo.png';
+import logo from '../../logo1.png';
 import CreateProductModal from '../components/createProductModal.tsx';
 import AppBarComponent from '../components/AppBarComponent.tsx';
 import useAuth from '../hooks/useAuth';
@@ -26,7 +26,7 @@ const ProductsPage: React.FC = () => {
     const [totalProducts, setTotalProducts] = useState(0);
     const [isModalOpen, setIsModalOpen] = useState(false);
 
-    const { isLoggedIn, isAdmin, anchorEl, handleAvatarClick, handleMenuClose, handleLogout } = useAuth();
+    const { isLoggedIn, isAdmin, anchorEl, handleAvatarClick, handleMenuClose, handleLogout } = useAuth(); // Use the custom hook
 
     const navigate = useNavigate();
     const location = useLocation();
