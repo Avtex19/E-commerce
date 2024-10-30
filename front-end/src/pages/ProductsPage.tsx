@@ -10,11 +10,13 @@ import {
     Box,
 } from '@mui/material';
 import { fetchProducts } from '../api/productService.ts';
-import { logout } from '../api/logoutService.ts';
 import { useLocation, useNavigate } from 'react-router-dom';
 import logo from '../../logo.png';
 import CreateProductModal from '../components/createProductModal.tsx';
 import AppBarComponent from '../components/AppBarComponent.tsx';
+import useAuth from '../hooks/useAuth';
+
+
 
 const ProductsPage: React.FC = () => {
     const [products, setProducts] = useState<any[]>([]);
@@ -22,11 +24,9 @@ const ProductsPage: React.FC = () => {
     const [page, setPage] = useState(1);
     const [searchQuery, setSearchQuery] = useState('');
     const [totalProducts, setTotalProducts] = useState(0);
-    const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem('authTokens'));
-    const [isAdmin, setIsAdmin] = useState<boolean>(false);
-    const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const token = localStorage.getItem('authTokens') || '';
+
+    const { isLoggedIn, isAdmin, anchorEl, handleAvatarClick, handleMenuClose, handleLogout } = useAuth();
 
     const navigate = useNavigate();
     const location = useLocation();
@@ -65,11 +65,6 @@ const ProductsPage: React.FC = () => {
         navigate(`?${params.toString()}`, { replace: true });
     }, [page, searchQuery, navigate]);
 
-    useEffect(() => {
-        const adminStatus = localStorage.getItem('isAdmin') === 'true';
-        setIsAdmin(adminStatus);
-    }, [isLoggedIn]);
-
     const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSearchQuery(e.target.value);
         setPage(1);
@@ -84,38 +79,13 @@ const ProductsPage: React.FC = () => {
         setPage(value);
     };
 
-    const handleLogout = async () => {
-        try {
-            const tokens = JSON.parse(localStorage.getItem('authTokens') || '{}');
-            const refreshToken = tokens.refresh;
-
-            await logout(refreshToken);
-
-            localStorage.removeItem('authTokens');
-            localStorage.removeItem('isAdmin');
-            setIsLoggedIn(false);
-            setIsAdmin(false);
-            handleMenuClose();
-        } catch (error) {
-            console.error('Logout error:', error);
-        }
-    };
-
-    const handleAvatarClick = (event: React.MouseEvent<HTMLElement>) => {
-        setAnchorEl(event.currentTarget);
-    };
-
-    const handleMenuClose = () => {
-        setAnchorEl(null);
+    const handleCardClick = (productId: number) => {
+        navigate(`/products/${productId}`);
     };
 
     const truncateDescription = (text: string, wordLimit: number) => {
         const words = text.split(' ');
         return words.length > wordLimit ? words.slice(0, wordLimit).join(' ') + '...' : text;
-    };
-
-    const handleCardClick = (productId: number) => {
-        navigate(`/products/${productId}`);
     };
 
     return (
@@ -208,7 +178,7 @@ const ProductsPage: React.FC = () => {
             <CreateProductModal
                 open={isModalOpen}
                 onClose={() => setIsModalOpen(false)}
-                token={token}
+                token={localStorage.getItem('authTokens') || ''}
             />
         </Box>
     );
