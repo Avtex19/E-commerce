@@ -12,7 +12,7 @@ export const logout = async (refreshToken: string) => {
         const accessToken = tokens.access;
 
         const response = await axiosInstance.post(
-            '/api/logout/',
+            'account/logout/',
             {
                 refresh_token: refreshToken,
             },

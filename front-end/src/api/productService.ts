@@ -8,7 +8,7 @@ const axiosInstance = axios.create({
 
 export const fetchProducts = async (page: number | null = 1, searchQuery: string = '') => {
     try {
-        let url = '/api/products/?limit=6';
+        let url = 'products/?limit=6';
 
         if (searchQuery) {
             url += `&search=${searchQuery}`;

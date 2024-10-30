@@ -18,7 +18,7 @@ export const updateAccountDetails = async (updateData: AccountUpdateData): Promi
         const tokens = JSON.parse(localStorage.getItem('authTokens') || '{}');
         const accessToken = tokens.access;
 
-        const response = await axiosInstance.patch('api/account/update/', updateData, {
+        const response = await axiosInstance.patch('account/update/', updateData, {
             headers: {
                 Authorization: `Bearer ${accessToken}`,
             },

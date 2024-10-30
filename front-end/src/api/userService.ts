@@ -14,7 +14,7 @@ interface User {
 
 export const getCurrentUserAdminStatus = async (token: string): Promise<boolean | null> => {
     try {
-        const response = await axiosInstance.get('api/user/info/', {
+        const response = await axiosInstance.get('account/info/', {
             headers: {
                 Authorization: `Bearer ${token}`,
             },

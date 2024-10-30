@@ -23,7 +23,7 @@ export const getCategories = async (): Promise<Category[] | null> => {
         const tokens = JSON.parse(localStorage.getItem('authTokens') || '{}');
         const accessToken = tokens.access;
 
-        const response = await axiosInstance.get<CategoryResponse>('/api/categories/', {
+        const response = await axiosInstance.get<CategoryResponse>('categories/', {
             headers: {
                 Authorization: `Bearer ${accessToken}`,
             },

@@ -15,7 +15,7 @@ interface RegisterData {
 
 export const register = async(data: RegisterData) => {
     try{
-        const response = await axiosInstance.post('api/register/', data);
+        const response = await axiosInstance.post('account/register/', data);
         console.log(response.data);
         return response.data;
     }

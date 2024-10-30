@@ -21,7 +21,7 @@ export const createProduct = async (productData: Product): Promise<Product | nul
         const tokens = JSON.parse(localStorage.getItem('authTokens') || '{}');
         const accessToken = tokens.access;
 
-        const response = await axiosInstance.post('api/products/', productData, {
+        const response = await axiosInstance.post('products/', productData, {
             headers: {
                 Authorization: `Bearer ${accessToken}`,
             },

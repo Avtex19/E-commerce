@@ -13,7 +13,7 @@ interface LoginData {
 
 export const login = async (data: LoginData) => {
     try {
-        const response = await axiosInstance.post('api/login/', data);
+        const response = await axiosInstance.post('account/login/', data);
         return response.data;
     } catch (error: any) {
         if (error.response && error.response.status === 401) {

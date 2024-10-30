@@ -19,7 +19,7 @@ interface Product {
 
 export const getProductDetails = async (id: number): Promise<Product | null> => {
     try {
-        const response = await axiosInstance.get<Product>(`/api/products/${id}/`);
+        const response = await axiosInstance.get<Product>(`products/${id}/`);
         console.log('Product details fetched:', response.data);
         return response.data;
     } catch (error: any) {
