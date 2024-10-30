@@ -6,14 +6,15 @@ import {
     Card,
     CardContent,
     CardMedia,
-    Typography, Box,
+    Typography,
+    Box,
 } from '@mui/material';
-import { fetchProducts } from "../api/productService.ts";
-import { logout } from "../api/logoutService.ts";
-import {useLocation, useNavigate} from 'react-router-dom';
+import { fetchProducts } from '../api/productService.ts';
+import { logout } from '../api/logoutService.ts';
+import { useLocation, useNavigate } from 'react-router-dom';
 import logo from '../../logo.png';
-import CreateProductModal from "../components/createProductModal.tsx";
-import AppBarComponent from "../components/AppBarComponent.tsx";
+import CreateProductModal from '../components/createProductModal.tsx';
+import AppBarComponent from '../components/AppBarComponent.tsx';
 
 const ProductsPage: React.FC = () => {
     const [products, setProducts] = useState<any[]>([]);
@@ -29,19 +30,15 @@ const ProductsPage: React.FC = () => {
 
     const navigate = useNavigate();
     const location = useLocation();
-
+    const productsPerPage = 6;
 
     useEffect(() => {
         const params = new URLSearchParams(location.search);
         const pageParam = params.get('page');
         const searchParam = params.get('search');
 
-        if (pageParam) {
-            setPage(Number(pageParam));
-        }
-        if (searchParam) {
-            setSearchQuery(searchParam);
-        }
+        if (pageParam) setPage(Number(pageParam));
+        if (searchParam) setSearchQuery(searchParam);
     }, [location.search]);
 
     useEffect(() => {
@@ -64,12 +61,9 @@ const ProductsPage: React.FC = () => {
     useEffect(() => {
         const params = new URLSearchParams();
         params.set('page', String(page));
-        if (searchQuery) {
-            params.set('search', searchQuery);
-        }
+        if (searchQuery) params.set('search', searchQuery);
         navigate(`?${params.toString()}`, { replace: true });
     }, [page, searchQuery, navigate]);
-
 
     useEffect(() => {
         const adminStatus = localStorage.getItem('isAdmin') === 'true';
@@ -89,6 +83,7 @@ const ProductsPage: React.FC = () => {
     const handlePageChange = (_event: React.ChangeEvent<unknown>, value: number) => {
         setPage(value);
     };
+
     const handleLogout = async () => {
         try {
             const tokens = JSON.parse(localStorage.getItem('authTokens') || '{}');
@@ -101,7 +96,7 @@ const ProductsPage: React.FC = () => {
             setIsLoggedIn(false);
             setIsAdmin(false);
             handleMenuClose();
-        } catch (error: unknown) {
+        } catch (error) {
             console.error('Logout error:', error);
         }
     };
@@ -113,19 +108,18 @@ const ProductsPage: React.FC = () => {
     const handleMenuClose = () => {
         setAnchorEl(null);
     };
+
     const truncateDescription = (text: string, wordLimit: number) => {
         const words = text.split(' ');
         return words.length > wordLimit ? words.slice(0, wordLimit).join(' ') + '...' : text;
     };
+
     const handleCardClick = (productId: number) => {
         navigate(`/products/${productId}`);
     };
 
-
-
-
     return (
-        <Box>
+        <Box sx={{ backgroundColor: '#f4f4f9', minHeight: '100vh' }}>
             <AppBarComponent
                 logo={logo}
                 isAdmin={isAdmin}
@@ -144,51 +138,71 @@ const ProductsPage: React.FC = () => {
 
             <Box sx={{ padding: '20px' }}>
                 {loading ? (
-                    <CircularProgress />
+                    <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '300px' }}>
+                        <CircularProgress />
+                    </Box>
                 ) : (
-                    <>
-                        <Grid container spacing={4}>
-                            {products.map((product) => (
-                                <Grid item xs={12} sm={6} md={4} key={product.id}>
-                                    <Card sx={{
+                    <Grid container spacing={3}>
+                        {products.slice(0, productsPerPage).map((product) => (
+                            <Grid item xs={12} sm={6} md={4} key={product.id}>
+                                <Card
+                                    sx={{
                                         maxWidth: 400,
                                         height: '100%',
-                                        transition: 'transform 0.2s, box-shadow 0.2s',
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        boxShadow: '0 2px 10px rgba(0, 0, 0, 0.15)',
+                                        transition: 'transform 0.3s, box-shadow 0.3s',
                                         '&:hover': {
                                             transform: 'scale(1.05)',
-                                            boxShadow: '0 4px 20px rgba(0,0,0,0.2)',
+                                            boxShadow: '0 4px 20px rgba(0, 0, 0, 0.2)',
                                         },
-                                    }}onClick={() => handleCardClick(product.id)}
+                                    }}
+                                    onClick={() => handleCardClick(product.id)}
+                                >
+                                    <Box
+                                        sx={{
+                                            position: 'relative',
+                                            width: '100%',
+                                            overflow: 'hidden',
+                                        }}
                                     >
                                         <CardMedia
                                             component="img"
-                                            height="200"
                                             image={product.thumbnail}
                                             alt={product.name}
+                                            sx={{
+                                                height: '100%',
+                                                width: '100%',
+                                                objectFit: 'cover',
+                                            }}
                                         />
-                                        <CardContent>
-                                            <Typography gutterBottom variant="h5">{product.name}</Typography>
-                                            <Typography variant="body2" color="text.secondary">
-                                                {truncateDescription(product.description, 4)}
-                                            </Typography>
-                                            <Typography variant="h6" color="primary">
-                                                ${product.price.toFixed(2)}
-                                            </Typography>
-                                        </CardContent>
-                                    </Card>
-                                </Grid>
-                            ))}
-                        </Grid>
-                    </>
+                                    </Box>
+                                    <CardContent sx={{ padding: '16px' }}>
+                                        <Typography gutterBottom variant="h5" component="div">
+                                            {product.name}
+                                        </Typography>
+                                        <Typography variant="body2" color="text.secondary">
+                                            {truncateDescription(product.description, 10)}
+                                        </Typography>
+                                        <Typography variant="h6" color="primary" sx={{ marginTop: '8px' }}>
+                                            ${product.price.toFixed(2)}
+                                        </Typography>
+                                    </CardContent>
+                                </Card>
+                            </Grid>
+                        ))}
+                    </Grid>
                 )}
-
-                <Pagination
-                    count={Math.ceil(totalProducts / 6)}
-                    page={page}
-                    onChange={handlePageChange}
-                    color="primary"
-                    sx={{ marginTop: '20px', display: 'flex', justifyContent: 'center' }}
-                />
+                <Box sx={{ marginTop: '20px', display: 'flex', justifyContent: 'center' }}>
+                    <Pagination
+                        count={Math.ceil(totalProducts / productsPerPage)}
+                        page={page}
+                        onChange={handlePageChange}
+                        color="primary"
+                        sx={{ padding: '16px 0' }}
+                    />
+                </Box>
             </Box>
 
             <CreateProductModal
