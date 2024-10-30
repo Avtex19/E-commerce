@@ -47,20 +47,6 @@ class LoginUserSerializer(serializers.Serializer):
         return attrs
 
 
-class CategorySerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Category
-        fields = '__all__'
-
-
-class ProductSerializer(serializers.ModelSerializer):
-    category = serializers.PrimaryKeyRelatedField(queryset=Category.objects.all())
-
-    #So we used PrimaryKeyRelatedField in order to create product and connect it to category with its id
-    class Meta:
-        model = Product
-        fields = '__all__'
-
 
 class AccountUpdateSerializer(serializers.Serializer):
     old_password = serializers.CharField(required=False, write_only=True)

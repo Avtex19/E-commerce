@@ -7,12 +7,10 @@ from rest_framework.decorators import api_view
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from .serializers import RegisterUserSerializer, LoginUserSerializer, ProductSerializer, CategorySerializer, \
-    UserSerializer, AccountUpdateSerializer
+from .serializers import RegisterUserSerializer, LoginUserSerializer, UserSerializer, AccountUpdateSerializer
 from rest_framework import status, generics, viewsets, filters
 from drf_yasg import openapi
-from ..models import Product, Category
-from rest_framework.permissions import IsAdminUser
+
 
 
 @api_view(['GET'])
@@ -164,7 +162,6 @@ class AccountUpdateView(generics.UpdateAPIView):
 
     http_method_names = ['patch']
 
-
     @swagger_auto_schema(
         operation_summary="Update User Account Information",
         operation_description="Allows the user to update their account details such as username, email, and password.",
@@ -213,23 +210,6 @@ class AccountUpdateView(generics.UpdateAPIView):
             }, status=status.HTTP_200_OK)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-class CategoriesView(generics.ListAPIView):
-    queryset = Category.objects.all()
-    serializer_class = CategorySerializer
-
-
-class ProductViewSet(viewsets.ModelViewSet):
-    queryset = Product.objects.all()
-    serializer_class = ProductSerializer
-    filter_backends = [filters.SearchFilter]
-    search_fields = ['name']
-
-    def get_permissions(self):
-        if self.action not in ['list', 'retrieve']:
-            return [IsAdminUser()]
-        return super().get_permissions()
 
 
 class UserViewSet(viewsets.ViewSet):
