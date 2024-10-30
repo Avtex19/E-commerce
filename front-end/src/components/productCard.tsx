@@ -9,19 +9,26 @@ import {
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import ImageModal from "./imageModal.tsx";
+import { getCategories } from '../api/getCategories';
+
+interface Product {
+    id: number;
+    category: number;
+    name: string;
+    description: string;
+    price: number;
+    quantity: number;
+    thumbnail: string;
+    additional_images: string[];
+}
 
 interface ProductCardProps {
-    product: {
-        name: string;
-        description: string;
-        price: number;
-        thumbnail: string;
-        quantity: number;
-        additional_images?: string[];
-    };
+    product: Product;
 }
 
 const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
+    const [categories, setCategories] = useState<{ id: number; name: string }[]>([]);
+    const [categoryName, setCategoryName] = useState<string>('');
     const isAdmin = JSON.parse(localStorage.getItem('isAdmin') || 'false');
 
     const allImages = [product.thumbnail, ...(product.additional_images || [])];
@@ -30,8 +37,25 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
     const [carouselIndex, setCarouselIndex] = useState(0);
     const visibleImagesCount = 4;
 
-    // State to manage modal visibility
     const [modalOpen, setModalOpen] = useState(false);
+
+    useEffect(() => {
+        const fetchCategories = async () => {
+            const fetchedCategories = await getCategories();
+            if (fetchedCategories) {
+                setCategories(fetchedCategories);
+            }
+        };
+
+        fetchCategories();
+    }, []);
+
+    useEffect(() => {
+        if (categories.length > 0) {
+            const foundCategory = categories.find(category => category.id === product.category);
+            setCategoryName(foundCategory ? foundCategory.name : 'Unknown Category');
+        }
+    }, [categories, product.category]);
 
     useEffect(() => {
         if (mainImageIndex < carouselIndex) {
@@ -73,9 +97,9 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
                                 height: 'auto',
                                 borderRadius: '8px',
                                 boxShadow: '0 8px 16px rgba(0,0,0,0.15)',
-                                cursor: 'pointer', // Change cursor to pointer
+                                cursor: 'pointer',
                             }}
-                            onClick={() => setModalOpen(true)} // Open modal on click
+                            onClick={() => setModalOpen(true)}
                         />
 
                         {allImages.length > 1 && (
@@ -118,6 +142,9 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
                 <Grid item xs={12} sm={7} md={8}>
                     <Typography variant="h4" sx={{ fontWeight: 'bold', marginBottom: '8px' }}>
                         {product.name}
+                    </Typography>
+                    <Typography variant="subtitle1" color="text.secondary" sx={{ marginBottom: '8px' }}>
+                        Category: {categoryName}
                     </Typography>
 
                     <Typography variant="h5" color="primary" sx={{ fontWeight: 'bold', marginBottom: '12px' }}>
