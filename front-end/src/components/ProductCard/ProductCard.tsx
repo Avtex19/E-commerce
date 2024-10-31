@@ -11,7 +11,7 @@ import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import ImageModal from "../ImageModal/ImageModal.tsx";
 import { getCategories } from '../../api/getCategories.ts';
 import DeleteIcon from "@mui/icons-material/Delete";
-import {EditProductModal} from "../EditProductModal";
+import { EditProductModal } from "../EditProductModal";
 
 interface Product {
     id: number;
@@ -27,11 +27,9 @@ interface Product {
 interface ProductCardProps {
     product: Product;
     onDelete: (id: number) => Promise<void>;
-
-
 }
 
-const ProductCard: React.FC<ProductCardProps> = ({ product,onDelete }) => {
+const ProductCard: React.FC<ProductCardProps> = ({ product, onDelete }) => {
     const [categories, setCategories] = useState<{ id: number; name: string }[]>([]);
     const [categoryName, setCategoryName] = useState<string>('');
     const isAdmin = JSON.parse(localStorage.getItem('isAdmin') || 'false');
@@ -45,7 +43,6 @@ const ProductCard: React.FC<ProductCardProps> = ({ product,onDelete }) => {
     const [modalOpen, setModalOpen] = useState(false);
     const [editModalOpen, setEditModalOpen] = useState(false);
 
-
     useEffect(() => {
         const fetchCategories = async () => {
             const fetchedCategories = await getCategories();
@@ -56,7 +53,6 @@ const ProductCard: React.FC<ProductCardProps> = ({ product,onDelete }) => {
 
         fetchCategories();
     }, []);
-
 
     useEffect(() => {
         if (categories.length > 0) {
@@ -73,7 +69,6 @@ const ProductCard: React.FC<ProductCardProps> = ({ product,onDelete }) => {
         }
     }, [mainImageIndex]);
 
-
     const handleNextImage = () => {
         setMainImageIndex((prevIndex) => (prevIndex + 1) % allImages.length);
     };
@@ -81,6 +76,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product,onDelete }) => {
     const handlePrevImage = () => {
         setMainImageIndex((prevIndex) => (prevIndex - 1 + allImages.length) % allImages.length);
     };
+
     const handleDelete = async () => {
         if (window.confirm("Are you sure you want to delete this product?")) {
             await onDelete(product.id);
@@ -143,9 +139,6 @@ const ProductCard: React.FC<ProductCardProps> = ({ product,onDelete }) => {
                                         cursor: 'pointer',
                                         transition: 'transform 0.3s',
                                         border: mainImageIndex === carouselIndex + index ? '2px solid orange' : 'none',
-                                        '&:hover': {
-                                            transform: 'scale(1.05)',
-                                        },
                                     }}
                                 />
                             ))}
@@ -164,7 +157,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product,onDelete }) => {
                                 onClick={handleDelete}
                                 color="error"
                             >
-                                <DeleteIcon sx={{ fontSize: '2rem' }}/>
+                                <DeleteIcon sx={{ fontSize: '2rem' }} />
                             </IconButton>
                         )}
                     </Box>
@@ -177,7 +170,14 @@ const ProductCard: React.FC<ProductCardProps> = ({ product,onDelete }) => {
                         ${product.price.toFixed(2)}
                     </Typography>
 
-                    <Typography variant="body1" color="text.secondary" sx={{ marginBottom: '16px' }}>
+                    <Typography
+                        variant="body1"
+                        color="text.secondary"
+                        sx={{
+                            whiteSpace: 'pre-line',
+                            marginBottom: '16px',
+                        }}
+                    >
                         {product.description}
                     </Typography>
 
