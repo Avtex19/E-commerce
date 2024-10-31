@@ -97,21 +97,21 @@ const AppBarComponent: React.FC<AppBarComponentProps> = ({
                 </Box>
 
                 <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                        <IconButton
-                            color="inherit"
-                            sx={{
-                                mr: 2,
-                                '&:hover': {
-                                    backgroundColor: '#333333',
-                                    borderRadius: '50%',
-                                },
-                            }}
-                            onClick={() => navigate('/cart')}
-                        >
-                            <Badge badgeContent={cartItemCount} color="error">
-                                <ShoppingCartIcon sx={{ fontSize: 24, color: 'white' }} />
-                            </Badge>
-                        </IconButton>
+                    <IconButton
+                        color="inherit"
+                        sx={{
+                            mr: 2,
+                            '&:hover': {
+                                backgroundColor: '#333333',
+                                borderRadius: '50%',
+                            },
+                        }}
+                        onClick={() => navigate('/cart')}
+                    >
+                        <Badge badgeContent={cartItemCount} color="error">
+                            <ShoppingCartIcon sx={{ fontSize: 24, color: 'white' }} />
+                        </Badge>
+                    </IconButton>
 
 
                     {!isProductPage && isAdmin && (
@@ -163,14 +163,13 @@ const AppBarComponent: React.FC<AppBarComponentProps> = ({
                             },
                         }}
                     >
-                        {isLoggedIn ? (
-                            <>
-                                <MenuItem onClick={() => navigate('/account')} sx={{ color: 'white' }}>Account Details</MenuItem>
-                                <MenuItem onClick={handleLogout} sx={{ color: 'white' }}>Logout</MenuItem>
-                            </>
-                        ) : (
-                            <MenuItem onClick={() => navigate('/login')} sx={{ color: 'white' }}>Login</MenuItem>
-                        )}
+                        {isLoggedIn
+                            ? [
+                                <MenuItem key="account" onClick={() => navigate('/account')} sx={{ color: 'white' }}>Account Details</MenuItem>,
+                                <MenuItem key="logout" onClick={handleLogout} sx={{ color: 'white' }}>Logout</MenuItem>,
+                            ]
+                            : <MenuItem onClick={() => navigate('/login')} sx={{ color: 'white' }}>Login</MenuItem>
+                        }
                     </Menu>
                 </Box>
             </Toolbar>
