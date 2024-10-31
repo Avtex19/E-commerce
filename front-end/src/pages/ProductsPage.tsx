@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import {
     Grid,
     Pagination,
@@ -9,14 +9,12 @@ import {
     Typography,
     Box,
 } from '@mui/material';
-import { fetchProducts } from '../api/productService.ts';
+import { fetchProducts } from '../api/productService';
 import { useLocation, useNavigate } from 'react-router-dom';
 import logo from '../../logo1.png';
-import CreateProductModal from '../components/createProductModal.tsx';
-import AppBarComponent from '../components/AppBarComponent.tsx';
+import CreateProductModal from '../components/createProductModal';
+import AppBarComponent from '../components/AppBarComponent';
 import useAuth from '../hooks/useAuth';
-
-
 
 const ProductsPage: React.FC = () => {
     const [products, setProducts] = useState<any[]>([]);
@@ -26,8 +24,7 @@ const ProductsPage: React.FC = () => {
     const [totalProducts, setTotalProducts] = useState(0);
     const [isModalOpen, setIsModalOpen] = useState(false);
 
-    const { isLoggedIn, isAdmin, anchorEl, handleAvatarClick, handleMenuClose, handleLogout } = useAuth(); // Use the custom hook
-
+    const { isLoggedIn, isAdmin, anchorEl, handleAvatarClick, handleMenuClose, handleLogout } = useAuth();
     const navigate = useNavigate();
     const location = useLocation();
     const productsPerPage = 6;
@@ -39,12 +36,12 @@ const ProductsPage: React.FC = () => {
 
         if (pageParam) setPage(Number(pageParam));
         if (searchParam) setSearchQuery(searchParam);
-    }, [location.search]);
+    }, []);
 
     useEffect(() => {
         const loadProducts = async () => {
+            setLoading(true);
             try {
-                setLoading(true);
                 const data = await fetchProducts(page, searchQuery);
                 setProducts(data.results);
                 setTotalProducts(data.count);
@@ -54,16 +51,25 @@ const ProductsPage: React.FC = () => {
                 setLoading(false);
             }
         };
-
         loadProducts();
     }, [page, searchQuery]);
 
+    const syncUrlWithState = useCallback(() => {
+        const params = new URLSearchParams(location.search);
+        const pageParam = params.get('page');
+        const searchParam = params.get('search');
+
+        if (pageParam !== String(page) || searchParam !== searchQuery) {
+            const newParams = new URLSearchParams();
+            newParams.set('page', String(page));
+            if (searchQuery) newParams.set('search', searchQuery);
+            navigate(`?${newParams.toString()}`, { replace: true });
+        }
+    }, [page, searchQuery, location.search, navigate]);
+
     useEffect(() => {
-        const params = new URLSearchParams();
-        params.set('page', String(page));
-        if (searchQuery) params.set('search', searchQuery);
-        navigate(`?${params.toString()}`, { replace: true });
-    }, [page, searchQuery, navigate]);
+        syncUrlWithState();
+    }, [syncUrlWithState]);
 
     const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setSearchQuery(e.target.value);
