@@ -71,9 +71,8 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialProduct, onSubmit }) =
     };
 
     const handleSubmit = async () => {
-        // Clear the snackbar message
         setSnackbarMessage('');
-        setSnackbarOpen(false); // Close snackbar if it was open
+        setSnackbarOpen(false);
 
         if (category && name && description && price > 0 && quantity > 0) {
             const productData = {
@@ -87,8 +86,8 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialProduct, onSubmit }) =
             };
             await onSubmit(productData);
         } else {
-            setSnackbarMessage('Please fill in all required fields.'); // Set snackbar message
-            setSnackbarOpen(true); // Open the snackbar
+            setSnackbarMessage('Please fill in all required fields.');
+            setSnackbarOpen(true);
         }
     };
 
@@ -125,7 +124,15 @@ const ProductForm: React.FC<ProductFormProps> = ({ initialProduct, onSubmit }) =
                 margin="normal"
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
+                multiline
+                rows={3}
+                sx={{
+                    '& textarea': {
+                        minHeight: '50px',
+                    },
+                }}
             />
+
             <TextField
                 label="Price"
                 variant="outlined"
