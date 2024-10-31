@@ -1,0 +1,1 @@
+export {default as createProductModal} from "./createProductModal.tsx"

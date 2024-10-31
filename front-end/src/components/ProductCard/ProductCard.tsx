@@ -8,10 +8,10 @@ import {
 } from '@mui/material';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
-import ImageModal from "./imageModal.tsx";
-import { getCategories } from '../api/getCategories';
+import ImageModal from "../ImageModal/ImageModal.tsx";
+import { getCategories } from '../../api/getCategories.ts';
 import DeleteIcon from "@mui/icons-material/Delete";
-import EditProductModal from "./editProductModal.tsx";
+import {EditProductModal} from "../EditProductModal";
 
 interface Product {
     id: number;

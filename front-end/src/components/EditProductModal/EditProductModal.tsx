@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Modal, Box, Typography, Snackbar, Alert } from '@mui/material';
-import { editProduct } from '../api/editProduct';
-import ProductForm from "./productForm.tsx";
+import { editProduct } from '../../api/editProduct.ts';
+import ProductForm from "../ProductForm/ProductForm.tsx";
 
 interface Product {
     id: number;

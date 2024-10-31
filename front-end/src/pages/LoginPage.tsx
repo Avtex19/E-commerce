@@ -1,6 +1,6 @@
 import React from 'react';
 import { Container, Box } from '@mui/material';
-import LoginForm from '../components/LoginForm';
+import {LoginForm} from '../components/LoginForm';
 import { getCurrentUserAdminStatus } from '../api/userService';
 
 const LoginPage: React.FC = () => {

@@ -3,8 +3,8 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { CircularProgress, Typography, Snackbar, Alert } from '@mui/material';
 import { getProductDetails } from "../api/getProductDetails";
 import { deleteProduct } from "../api/deleteProduct";
-import ProductCard from "../components/productCard";
-import AppBarComponent from '../components/AppBarComponent';
+import {ProductCard} from "../components/ProductCard";
+import {AppBarComponent} from '../components/AppBar';
 import logo from "../../logo1.png";
 import useAuth from '../hooks/useAuth';
 

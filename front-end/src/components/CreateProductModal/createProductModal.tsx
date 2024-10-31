@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Modal, Box, Typography, Snackbar, Alert } from '@mui/material';
-import { createProduct } from '../api/createProduct';
-import ProductForm from './productForm.tsx';
+import { createProduct } from '../../api/createProduct.ts';
+import ProductForm from '../ProductForm/ProductForm.tsx';
 
 interface CreateProductModalProps {
     open: boolean;

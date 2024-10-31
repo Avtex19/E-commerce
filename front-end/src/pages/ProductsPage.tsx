@@ -12,8 +12,8 @@ import {
 import { fetchProducts } from '../api/productService';
 import { useLocation, useNavigate } from 'react-router-dom';
 import logo from '../../logo1.png';
-import CreateProductModal from '../components/createProductModal';
-import AppBarComponent from '../components/AppBarComponent';
+import CreateProductModal from '../components/CreateProductModal/createProductModal.tsx';
+import {AppBarComponent} from '../components/AppBar';
 import useAuth from '../hooks/useAuth';
 
 const ProductsPage: React.FC = () => {

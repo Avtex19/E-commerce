@@ -11,7 +11,7 @@ import {
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
-import { getCategories } from '../api/getCategories';
+import { getCategories } from '../../api/getCategories.ts';
 
 
 interface Category {

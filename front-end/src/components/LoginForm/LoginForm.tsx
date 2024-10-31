@@ -1,44 +1,42 @@
 import React, { useState } from 'react';
 import { Button, TextField, Typography, Alert, Box } from '@mui/material';
-import { register } from '../api/registerService';
+import { login } from '../../api/loginService.ts';
 import { useNavigate } from 'react-router-dom';
-import HomeIcon from "@mui/icons-material/Home";
+import HomeIcon from '@mui/icons-material/Home';
 
-interface RegisterFormProps {
-    onRegisterSuccess: () => void;
+interface LoginFormProps {
+    onLoginSuccess: (tokens: any) => void;
 }
 
-const RegisterForm: React.FC<RegisterFormProps> = ({ onRegisterSuccess }) => {
+const LoginForm: React.FC<LoginFormProps> = ({ onLoginSuccess }) => {
     const [username, setUsername] = useState('');
-    const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [password2, setPassword2] = useState('');
     const [error, setError] = useState<string | null>(null);
     const [successMessage, setSuccessMessage] = useState<string | null>(null);
     const navigate = useNavigate();
 
-    const handleRegister = async (event: React.FormEvent) => {
+    const handleLogin = async (event: React.FormEvent) => {
         event.preventDefault();
 
-        const data = { username, email, password, password2};
-
         try {
-            await register(data);
-            setSuccessMessage('Registration successful!');
+            const tokens = await login({ username, password });
+            setSuccessMessage('Login successful!');
             setError(null);
-            onRegisterSuccess();
-            navigate('/login');
+            onLoginSuccess(tokens);
+            navigate('/');
         } catch (err: any) {
             setError(err.message);
             setSuccessMessage(null);
         }
     };
+
     const handleBackToHome = () => {
         navigate('/');
     };
-    const handleToLoginPage = () => {
-        navigate('/login');
-    }
+
+    const handleToRegisterPage = () => {
+        navigate('/register');
+    };
 
     return (
         <Box
@@ -68,7 +66,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onRegisterSuccess }) => {
                 }}
             />
             <Typography variant="h4" gutterBottom>
-                Register
+                Login
             </Typography>
 
             {error && (
@@ -76,14 +74,13 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onRegisterSuccess }) => {
                     {error}
                 </Alert>
             )}
-
             {successMessage && (
                 <Alert severity="success" sx={{ width: '100%', marginBottom: 2 }}>
                     {successMessage}
                 </Alert>
             )}
 
-            <form onSubmit={handleRegister} style={{ width: '100%' }}>
+            <form onSubmit={handleLogin} style={{ width: '100%' }}>
                 <TextField
                     label="Username"
                     variant="outlined"
@@ -91,16 +88,6 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onRegisterSuccess }) => {
                     margin="normal"
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
-                    required
-                />
-                <TextField
-                    label="Email"
-                    type="email"
-                    variant="outlined"
-                    fullWidth
-                    margin="normal"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
                     required
                 />
                 <TextField
@@ -113,16 +100,6 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onRegisterSuccess }) => {
                     onChange={(e) => setPassword(e.target.value)}
                     required
                 />
-                <TextField
-                    label="Confirm Password"
-                    type="password"
-                    variant="outlined"
-                    fullWidth
-                    margin="normal"
-                    value={password2}
-                    onChange={(e) => setPassword2(e.target.value)}
-                    required
-                />
                 <Button
                     type="submit"
                     variant="contained"
@@ -130,21 +107,21 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ onRegisterSuccess }) => {
                     fullWidth
                     sx={{ marginTop: 2 }}
                 >
-                    Register
+                    Login
                 </Button>
             </form>
-            <Typography variant="body2" sx={{ marginTop: 2,}} >
-                Already have an account?{' '}
-                <Typography
-                    variant="body2"
-                    sx={{ display: 'inline',color:'primary', textDecoration: 'underline', fontWeight: 'bold' ,cursor:'pointer'}}
-                    onClick={handleToLoginPage}
+
+            <Typography variant="body2" sx={{ marginTop: 2 }}>
+                Don't have an account?{' '}
+                <span
+                    onClick={handleToRegisterPage}
+                    style={{ textDecoration: 'underline', fontWeight: 'bold', cursor: 'pointer' }}
                 >
-                    Sign In
-                </Typography>
+                    Sign up
+                </span>
             </Typography>
         </Box>
     );
 };
 
-export default RegisterForm;
+export default LoginForm;
