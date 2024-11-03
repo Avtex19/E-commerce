@@ -12,6 +12,7 @@ import ImageModal from "../ImageModal/ImageModal.tsx";
 import { getCategories } from '../../api/getCategories.ts';
 import DeleteIcon from "@mui/icons-material/Delete";
 import { EditProductModal } from "../EditProductModal";
+import Cookies from 'js-cookie';
 
 interface Product {
     id: number;
@@ -81,6 +82,22 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onDelete }) => {
         if (window.confirm("Are you sure you want to delete this product?")) {
             await onDelete(product.id);
         }
+    };
+
+    const handleAddToCart = () => {
+        const cart = JSON.parse(Cookies.get('cart') || '[]') as Product[];
+
+        const existingProductIndex = cart.findIndex(item => item.id === product.id);
+
+        if (existingProductIndex > -1) {
+            cart[existingProductIndex].quantity += 1;
+        } else {
+            const cartProduct = { ...product, quantity: 1 };
+            cart.push(cartProduct);
+        }
+
+        Cookies.set('cart', JSON.stringify(cart), { expires: 7 });
+        alert('Product added to cart!');
     };
 
     return (
@@ -204,6 +221,8 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onDelete }) => {
                             fontWeight: 'bold',
                             marginRight: '10px',
                         }}
+                        onClick={handleAddToCart}
+                        disabled={product.quantity===0}
                     >
                         Add to Cart
                     </Button>
