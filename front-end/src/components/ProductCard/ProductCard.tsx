@@ -13,21 +13,16 @@ import { getCategories } from '../../api/getCategories.ts';
 import DeleteIcon from "@mui/icons-material/Delete";
 import { EditProductModal } from "../EditProductModal";
 import Cookies from 'js-cookie';
+import {CartItem, Product} from '../../types/types.ts'
 
-interface Product {
-    id: number;
-    category: number;
-    name: string;
-    description: string;
-    price: number;
-    quantity: number;
-    thumbnail: string;
-    additional_images: string[];
-}
+
+
 
 interface ProductCardProps {
     product: Product;
     onDelete: (id: number) => Promise<void>;
+    onAddToCart: (item: CartItem) => void;
+
 }
 
 const ProductCard: React.FC<ProductCardProps> = ({ product, onDelete }) => {
@@ -43,6 +38,8 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onDelete }) => {
 
     const [modalOpen, setModalOpen] = useState(false);
     const [editModalOpen, setEditModalOpen] = useState(false);
+    const [isInCart, setIsInCart] = useState(false);
+
 
     useEffect(() => {
         const fetchCategories = async () => {
@@ -91,14 +88,22 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onDelete }) => {
 
         if (existingProductIndex > -1) {
             cart[existingProductIndex].quantity += 1;
+            setIsInCart(true);
         } else {
             const cartProduct = { ...product, quantity: 1 };
             cart.push(cartProduct);
+            setIsInCart(true);
         }
 
         Cookies.set('cart', JSON.stringify(cart), { expires: 7 });
         alert('Product added to cart!');
     };
+
+    useEffect(() => {
+        const cart = JSON.parse(Cookies.get('cart') || '[]') as Product[];
+        const existingProduct = cart.find(item => item.id === product.id);
+        setIsInCart(!!existingProduct);
+    }, [product.id]);
 
     return (
         <>
@@ -222,9 +227,9 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onDelete }) => {
                             marginRight: '10px',
                         }}
                         onClick={handleAddToCart}
-                        disabled={product.quantity===0}
+                        disabled={product.quantity === 0 || isInCart}
                     >
-                        Add to Cart
+                        {isInCart ? 'In Cart' : 'Add to Cart'}
                     </Button>
 
                     {isAdmin && (
