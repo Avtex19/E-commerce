@@ -55,7 +55,7 @@ const AppBarComponent: React.FC<AppBarComponentProps> = ({
                     component="img"
                     src={logo}
                     alt="Logo"
-                    sx={{ height: 80,width:120, cursor: 'pointer' }}
+                    sx={{ height: 100,width:160, cursor: 'pointer' }}
                     onClick={() => navigate('/')}
                 />
 
@@ -144,7 +144,6 @@ const AppBarComponent: React.FC<AppBarComponentProps> = ({
                         }}
                     >
                         <Avatar alt="User Avatar" sx={{ backgroundColor: '#555555', color: 'white' }}>
-                            {/* You can replace this with initials or an image */}
                         </Avatar>
                     </IconButton>
 
