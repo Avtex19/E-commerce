@@ -12,8 +12,8 @@ import ImageModal from "../ImageModal/ImageModal.tsx";
 import { getCategories } from '../../api/getCategories.ts';
 import DeleteIcon from "@mui/icons-material/Delete";
 import { EditProductModal } from "../EditProductModal";
-import Cookies from 'js-cookie';
 import {CartItem, Product} from '../../types/types.ts'
+import {addToCart, getCart} from "../../stores/cartStore.ts";
 
 
 
@@ -82,27 +82,18 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onDelete }) => {
     };
 
     const handleAddToCart = () => {
-        const cart = JSON.parse(Cookies.get('cart') || '[]') as Product[];
-
-        const existingProductIndex = cart.findIndex(item => item.id === product.id);
-
-        if (existingProductIndex > -1) {
-            cart[existingProductIndex].quantity += 1;
-            setIsInCart(true);
-        } else {
-            const cartProduct = { ...product, quantity: 1 };
-            cart.push(cartProduct);
-            setIsInCart(true);
-        }
-
-        Cookies.set('cart', JSON.stringify(cart), { expires: 7 });
+        addToCart(product);
         alert('Product added to cart!');
+        updateIsInCart();
     };
 
-    useEffect(() => {
-        const cart = JSON.parse(Cookies.get('cart') || '[]') as Product[];
+    const updateIsInCart = () => {
+        const cart = getCart();
         const existingProduct = cart.find(item => item.id === product.id);
         setIsInCart(!!existingProduct);
+    };
+    useEffect(() => {
+        updateIsInCart();
     }, [product.id]);
 
     return (

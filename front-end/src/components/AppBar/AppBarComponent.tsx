@@ -1,23 +1,22 @@
-import React, { useState, useEffect } from 'react';
+import React, {useEffect, useState} from 'react';
 import {
     AppBar,
-    Toolbar,
+    Avatar,
+    Badge,
     Box,
     IconButton,
-    Avatar,
+    InputAdornment,
     Menu,
     MenuItem,
     TextField,
-    InputAdornment,
-    Badge,
-
+    Toolbar,
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import AddIcon from '@mui/icons-material/Add';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
-import Cookies from 'js-cookie';
-import {CartItem} from "../../types/types.ts";
+import {Product} from "../../types/types.ts";
 import CartPopover from "../CartPopOver/CartPopOver.tsx";
+import { getCart, updateCart, removeFromCart } from "../../stores/cartStore.ts";
 
 interface AppBarComponentProps {
     logo: string;
@@ -35,8 +34,6 @@ interface AppBarComponentProps {
     isProductPage?: boolean;
 }
 
-
-
 const AppBarComponent: React.FC<AppBarComponentProps> = ({
                                                              logo,
                                                              searchQuery,
@@ -53,14 +50,11 @@ const AppBarComponent: React.FC<AppBarComponentProps> = ({
                                                              isProductPage = false,
                                                          }) => {
     const [cartPopoverAnchor, setCartPopoverAnchor] = useState<null | HTMLElement>(null);
-    const [cartItems, setCartItems] = useState<CartItem[]>([]);
+    const [cartItems, setCartItems] = useState<Product[]>(getCart()); // Initialize cart items from cookies
 
     useEffect(() => {
-        const storedCart = Cookies.get('cart');
-        if (storedCart) {
-            setCartItems(JSON.parse(storedCart));
-        }
-    }, []);
+        updateCart(cartItems);
+    }, [cartItems]);
 
     const handleCartMouseEnter = (event: React.MouseEvent<HTMLElement>) => {
         setCartPopoverAnchor(event.currentTarget);
@@ -79,17 +73,13 @@ const AppBarComponent: React.FC<AppBarComponentProps> = ({
                 }
                 return item;
             });
-            Cookies.set('cart', JSON.stringify(updatedItems));
             return updatedItems;
         });
     };
 
     const handleRemoveFromCart = (itemId: number) => {
-        setCartItems((prevItems) => {
-            const updatedItems = prevItems.filter(item => item.id !== itemId);
-            Cookies.set('cart', JSON.stringify(updatedItems));
-            return updatedItems;
-        });
+        removeFromCart(itemId);
+        setCartItems(getCart());
     };
 
     return (
@@ -103,6 +93,7 @@ const AppBarComponent: React.FC<AppBarComponentProps> = ({
                     onClick={() => navigate('/')}
                 />
 
+                {/* Search Field */}
                 <Box sx={{ flexGrow: 1, display: 'flex', justifyContent: 'center' }}>
                     {!isProductPage && (
                         <TextField
@@ -140,6 +131,7 @@ const AppBarComponent: React.FC<AppBarComponentProps> = ({
                     )}
                 </Box>
 
+                {/* Cart and User Avatar */}
                 <Box sx={{ display: 'flex', alignItems: 'center' }}>
                     <IconButton
                         color="inherit"
@@ -160,6 +152,7 @@ const AppBarComponent: React.FC<AppBarComponentProps> = ({
                         navigate={navigate}
                     />
 
+                    {/* Admin Add Button */}
                     {!isProductPage && isAdmin && (
                         <IconButton
                             color="inherit"
@@ -179,6 +172,7 @@ const AppBarComponent: React.FC<AppBarComponentProps> = ({
                         </IconButton>
                     )}
 
+                    {/* User Avatar */}
                     <IconButton
                         onClick={handleAvatarClick}
                         sx={{
@@ -192,6 +186,7 @@ const AppBarComponent: React.FC<AppBarComponentProps> = ({
                         <Avatar alt="User Avatar" sx={{ backgroundColor: '#555555', color: 'white' }} />
                     </IconButton>
 
+                    {/* User Menu */}
                     <Menu
                         anchorEl={anchorEl}
                         open={Boolean(anchorEl)}
