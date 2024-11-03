@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     AppBar,
     Toolbar,
@@ -10,10 +10,14 @@ import {
     TextField,
     InputAdornment,
     Badge,
+
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import AddIcon from '@mui/icons-material/Add';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
+import Cookies from 'js-cookie';
+import {CartItem} from "../../types/types.ts";
+import CartPopover from "../CartPopOver/CartPopOver.tsx";
 
 interface AppBarComponentProps {
     logo: string;
@@ -29,8 +33,9 @@ interface AppBarComponentProps {
     navigate: (path: string) => void;
     setIsModalOpen: (open: boolean) => void;
     isProductPage?: boolean;
-    cartItemCount?: number;
 }
+
+
 
 const AppBarComponent: React.FC<AppBarComponentProps> = ({
                                                              logo,
@@ -46,8 +51,47 @@ const AppBarComponent: React.FC<AppBarComponentProps> = ({
                                                              navigate,
                                                              setIsModalOpen,
                                                              isProductPage = false,
-                                                             cartItemCount = 0,
                                                          }) => {
+    const [cartPopoverAnchor, setCartPopoverAnchor] = useState<null | HTMLElement>(null);
+    const [cartItems, setCartItems] = useState<CartItem[]>([]);
+
+    useEffect(() => {
+        const storedCart = Cookies.get('cart');
+        if (storedCart) {
+            setCartItems(JSON.parse(storedCart));
+        }
+    }, []);
+
+    const handleCartMouseEnter = (event: React.MouseEvent<HTMLElement>) => {
+        setCartPopoverAnchor(event.currentTarget);
+    };
+
+    const handlePopoverClose = () => {
+        setCartPopoverAnchor(null);
+    };
+
+    const handleQuantityChange = (itemId: number, action: 'increase' | 'decrease') => {
+        setCartItems((prevItems) => {
+            const updatedItems = prevItems.map((item) => {
+                if (item.id === itemId) {
+                    const newQuantity = action === 'increase' ? item.quantity + 1 : item.quantity - 1;
+                    return { ...item, quantity: Math.max(newQuantity, 1) };
+                }
+                return item;
+            });
+            Cookies.set('cart', JSON.stringify(updatedItems));
+            return updatedItems;
+        });
+    };
+
+    const handleRemoveFromCart = (itemId: number) => {
+        setCartItems((prevItems) => {
+            const updatedItems = prevItems.filter(item => item.id !== itemId);
+            Cookies.set('cart', JSON.stringify(updatedItems));
+            return updatedItems;
+        });
+    };
+
     return (
         <AppBar position="static" sx={{ backgroundColor: '#000000' }}>
             <Toolbar sx={{ display: 'flex', justifyContent: 'space-between' }}>
@@ -55,7 +99,7 @@ const AppBarComponent: React.FC<AppBarComponentProps> = ({
                     component="img"
                     src={logo}
                     alt="Logo"
-                    sx={{ height: 100,width:160, cursor: 'pointer' }}
+                    sx={{ height: 100, width: 160, cursor: 'pointer' }}
                     onClick={() => navigate('/')}
                 />
 
@@ -99,20 +143,22 @@ const AppBarComponent: React.FC<AppBarComponentProps> = ({
                 <Box sx={{ display: 'flex', alignItems: 'center' }}>
                     <IconButton
                         color="inherit"
-                        sx={{
-                            mr: 2,
-                            '&:hover': {
-                                backgroundColor: '#333333',
-                                borderRadius: '50%',
-                            },
-                        }}
-                        onClick={() => navigate('/cart')}
+                        sx={{ mr: 2 }}
+                        onMouseEnter={handleCartMouseEnter}
                     >
-                        <Badge badgeContent={cartItemCount} color="error">
+                        <Badge badgeContent={cartItems.reduce((acc, item) => acc + item.quantity, 0)} color="error">
                             <ShoppingCartIcon sx={{ fontSize: 24, color: 'white' }} />
                         </Badge>
                     </IconButton>
 
+                    <CartPopover
+                        anchorEl={cartPopoverAnchor}
+                        onClose={handlePopoverClose}
+                        cartItems={cartItems}
+                        onRemoveFromCart={handleRemoveFromCart}
+                        onChangeQuantity={handleQuantityChange}
+                        navigate={navigate}
+                    />
 
                     {!isProductPage && isAdmin && (
                         <IconButton
@@ -143,8 +189,7 @@ const AppBarComponent: React.FC<AppBarComponentProps> = ({
                             },
                         }}
                     >
-                        <Avatar alt="User Avatar" sx={{ backgroundColor: '#555555', color: 'white' }}>
-                        </Avatar>
+                        <Avatar alt="User Avatar" sx={{ backgroundColor: '#555555', color: 'white' }} />
                     </IconButton>
 
                     <Menu
@@ -164,11 +209,18 @@ const AppBarComponent: React.FC<AppBarComponentProps> = ({
                     >
                         {isLoggedIn
                             ? [
-                                <MenuItem key="account" onClick={() => navigate('/account')} sx={{ color: 'white' }}>Account Details</MenuItem>,
-                                <MenuItem key="logout" onClick={handleLogout} sx={{ color: 'white' }}>Logout</MenuItem>,
+                                <MenuItem key="account" onClick={() => navigate('/account')} sx={{ color: 'white' }}>
+                                    Account Details
+                                </MenuItem>,
+                                <MenuItem key="logout" onClick={handleLogout} sx={{ color: 'white' }}>
+                                    Logout
+                                </MenuItem>
                             ]
-                            : <MenuItem onClick={() => navigate('/login')} sx={{ color: 'white' }}>Login</MenuItem>
-                        }
+                            : (
+                                <MenuItem onClick={() => navigate('/login')} sx={{ color: 'white' }}>
+                                    Login
+                                </MenuItem>
+                            )}
                     </Menu>
                 </Box>
             </Toolbar>
