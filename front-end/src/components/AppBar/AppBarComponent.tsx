@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, { useState } from 'react';
 import {
     AppBar,
     Avatar,
@@ -14,9 +14,8 @@ import {
 import SearchIcon from '@mui/icons-material/Search';
 import AddIcon from '@mui/icons-material/Add';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
-import {Product} from "../../types/types.ts";
+import { Product } from "../../types/types.ts";
 import CartPopover from "../CartPopOver/CartPopOver.tsx";
-import {getCart, removeFromCart, updateCart} from "../../stores/cartStore.ts";
 
 interface AppBarComponentProps {
     logo: string;
@@ -32,6 +31,9 @@ interface AppBarComponentProps {
     navigate: (path: string) => void;
     setIsModalOpen: (open: boolean) => void;
     isProductPage?: boolean;
+    cartItems: Product[];
+    onAddToCart: (product: Product) => void;
+    onRemoveFromCart: (productId: number) => void;
 }
 
 const AppBarComponent: React.FC<AppBarComponentProps> = ({
@@ -48,13 +50,11 @@ const AppBarComponent: React.FC<AppBarComponentProps> = ({
                                                              navigate,
                                                              setIsModalOpen,
                                                              isProductPage = false,
+                                                             cartItems,
+                                                             onAddToCart,
+                                                             onRemoveFromCart,
                                                          }) => {
     const [cartPopoverAnchor, setCartPopoverAnchor] = useState<null | HTMLElement>(null);
-    const [cartItems, setCartItems] = useState<Product[]>(getCart());
-
-    useEffect(() => {
-        updateCart(cartItems);
-    }, [cartItems]);
 
     const handleCartMouseEnter = (event: React.MouseEvent<HTMLElement>) => {
         setCartPopoverAnchor(event.currentTarget);
@@ -64,22 +64,23 @@ const AppBarComponent: React.FC<AppBarComponentProps> = ({
         setCartPopoverAnchor(null);
     };
 
-    const handleQuantityChange = (itemId: number, action: 'increase' | 'decrease') => {
-        setCartItems((prevItems) => {
-            return prevItems.map((item) => {
-                if (item.id === itemId) {
-                    const newQuantity = action === 'increase' ? item.quantity + 1 : item.quantity - 1;
-                    return {...item, quantity: Math.max(newQuantity, 1)};
+    const handleChangeQuantity = (itemId: number, action: 'increase' | 'decrease') => {
+        const item = cartItems.find(item => item.id === itemId);
+        if (item) {
+            if (action === 'increase') {
+                onAddToCart(item);
+            } else {
+                if (item.quantity > 1) {
+                    onRemoveFromCart(itemId);
+                } else {
+                    onRemoveFromCart(itemId);
                 }
-                return item;
-            });
-        });
+            }
+        }
     };
-
-    const handleRemoveFromCart = (itemId: number) => {
-        removeFromCart(itemId);
-        setCartItems(getCart());
-    };
+    const handleRemoveFromCart = (id: number) => {
+        onRemoveFromCart(id);
+    }
 
     return (
         <AppBar position="static" sx={{ backgroundColor: '#000000' }}>
@@ -144,8 +145,8 @@ const AppBarComponent: React.FC<AppBarComponentProps> = ({
                         anchorEl={cartPopoverAnchor}
                         onClose={handlePopoverClose}
                         cartItems={cartItems}
+                        onChangeQuantity={handleChangeQuantity}
                         onRemoveFromCart={handleRemoveFromCart}
-                        onChangeQuantity={handleQuantityChange}
                         navigate={navigate}
                     />
 

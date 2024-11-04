@@ -12,20 +12,27 @@ import ImageModal from "../ImageModal/ImageModal.tsx";
 import { getCategories } from '../../api/getCategories.ts';
 import DeleteIcon from "@mui/icons-material/Delete";
 import { EditProductModal } from "../EditProductModal";
-import {CartItem, Product} from '../../types/types.ts'
-import {addToCart, getCart} from "../../stores/cartStore.ts";
 
-
-
+interface Product {
+    id: number;
+    category: number;
+    name: string;
+    description: string;
+    price: number;
+    quantity: number;
+    thumbnail: string;
+    additional_images: string[];
+}
 
 interface ProductCardProps {
     product: Product;
     onDelete: (id: number) => Promise<void>;
-    onAddToCart: (item: CartItem) => void;
-
+    onAddToCart: () => void;
+    isInCart: boolean;
 }
 
-const ProductCard: React.FC<ProductCardProps> = ({ product, onDelete }) => {
+
+const ProductCard: React.FC<ProductCardProps> = ({ product, onDelete, onAddToCart,isInCart }) => {
     const [categories, setCategories] = useState<{ id: number; name: string }[]>([]);
     const [categoryName, setCategoryName] = useState<string>('');
     const isAdmin = JSON.parse(localStorage.getItem('isAdmin') || 'false');
@@ -38,8 +45,6 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onDelete }) => {
 
     const [modalOpen, setModalOpen] = useState(false);
     const [editModalOpen, setEditModalOpen] = useState(false);
-    const [isInCart, setIsInCart] = useState(false);
-
 
     useEffect(() => {
         const fetchCategories = async () => {
@@ -67,6 +72,8 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onDelete }) => {
         }
     }, [mainImageIndex]);
 
+
+
     const handleNextImage = () => {
         setMainImageIndex((prevIndex) => (prevIndex + 1) % allImages.length);
     };
@@ -82,19 +89,8 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onDelete }) => {
     };
 
     const handleAddToCart = () => {
-        addToCart(product);
-        alert('Product added to cart!');
-        updateIsInCart();
+        onAddToCart();
     };
-
-    const updateIsInCart = () => {
-        const cart = getCart();
-        const existingProduct = cart.find(item => item.id === product.id);
-        setIsInCart(!!existingProduct);
-    };
-    useEffect(() => {
-        updateIsInCart();
-    }, [product.id]);
 
     return (
         <>
@@ -209,18 +205,17 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onDelete }) => {
                         variant="contained"
                         color="primary"
                         size="large"
+                        onClick={handleAddToCart}
                         sx={{
                             paddingX: '24px',
                             paddingY: '10px',
                             borderRadius: '25px',
                             textTransform: 'uppercase',
                             fontWeight: 'bold',
-                            marginRight: '10px',
                         }}
-                        onClick={handleAddToCart}
                         disabled={product.quantity === 0 || isInCart}
                     >
-                        {isInCart ? 'In Cart' : 'Add to Cart'}
+                        Add to Cart
                     </Button>
 
                     {isAdmin && (
