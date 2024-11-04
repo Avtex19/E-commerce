@@ -120,10 +120,10 @@ const ProductDetails: React.FC = () => {
             />
 
             <ProductCard
-                product={{ ...product, isInCart: cartItems.some(item => item.id === product.id) }} // Add isInCart based on current cart state
+                product={{ ...product, isInCart: cartItems.some(item => item.id === product.id) }}
                 onDelete={handleDelete}
                 onAddToCart={handleAddToCart}
-                isInCart={cartItems.some(item => item.id === product.id)} // Pass isInCart state
+                isInCart={cartItems.some(item => item.id === product.id)}
             />
 
             <Snackbar open={snackbarOpen} autoHideDuration={6000} onClose={handleSnackbarClose}>

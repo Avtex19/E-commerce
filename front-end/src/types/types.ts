@@ -8,7 +8,7 @@ type Product = {
     thumbnail: string;
     additional_images: string[];
 }
-type CartItem = {
+type CartItems = {
     id: number;
     name: string;
     quantity: number;
@@ -16,4 +16,4 @@ type CartItem = {
     thumbnail: string;
 }
 
-export type {Product,CartItem};
+export type {Product,CartItems};
