@@ -11,10 +11,14 @@ import {
     TextField,
     Toolbar,
 } from '@mui/material';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import ExitToAppIcon from '@mui/icons-material/ExitToApp';
+import LoginIcon from '@mui/icons-material/Login';
 import SearchIcon from '@mui/icons-material/Search';
 import AddIcon from '@mui/icons-material/Add';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import { Product } from "../../types/types.ts";
+
 
 import CartPopover from "../CartPopOver/CartPopOver.tsx";
 import {saveCart} from "../../stores/cartStore.ts";
@@ -209,20 +213,18 @@ const AppBarComponent: React.FC<AppBarComponentProps> = ({
                             },
                         }}
                     >
-                        {isLoggedIn
-                            ? [
-                                <MenuItem key="account" onClick={() => navigate('/account')} sx={{ color: 'white' }}>
-                                    Account Details
-                                </MenuItem>,
-                                <MenuItem key="logout" onClick={handleLogout} sx={{ color: 'white' }}>
-                                    Logout
-                                </MenuItem>
-                            ]
-                            : (
-                                <MenuItem onClick={() => navigate('/login')} sx={{ color: 'white' }}>
-                                    Login
-                                </MenuItem>
-                            )}
+                        {isLoggedIn ? [
+                            <MenuItem key="account" onClick={() => navigate('/account')} sx={{ color: 'white' }}>
+                                <AccountCircleIcon sx={{ mr: 1 }} /> Account Details
+                            </MenuItem>,
+                            <MenuItem key="logout" onClick={handleLogout} sx={{ color: 'white' }}>
+                                <ExitToAppIcon sx={{ mr: 1 }} /> Logout
+                            </MenuItem>
+                        ] : (
+                            <MenuItem key="login" onClick={() => navigate('/login')} sx={{ color: 'white' }}>
+                                <LoginIcon sx={{ mr: 1 }} /> Login
+                            </MenuItem>
+                        )}
                     </Menu>
                 </Box>
             </Toolbar>
