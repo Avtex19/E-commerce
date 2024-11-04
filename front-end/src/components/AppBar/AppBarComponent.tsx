@@ -16,7 +16,7 @@ import AddIcon from '@mui/icons-material/Add';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import {Product} from "../../types/types.ts";
 import CartPopover from "../CartPopOver/CartPopOver.tsx";
-import { getCart, updateCart, removeFromCart } from "../../stores/cartStore.ts";
+import {getCart, removeFromCart, updateCart} from "../../stores/cartStore.ts";
 
 interface AppBarComponentProps {
     logo: string;
@@ -66,14 +66,13 @@ const AppBarComponent: React.FC<AppBarComponentProps> = ({
 
     const handleQuantityChange = (itemId: number, action: 'increase' | 'decrease') => {
         setCartItems((prevItems) => {
-            const updatedItems = prevItems.map((item) => {
+            return prevItems.map((item) => {
                 if (item.id === itemId) {
                     const newQuantity = action === 'increase' ? item.quantity + 1 : item.quantity - 1;
-                    return { ...item, quantity: Math.max(newQuantity, 1) };
+                    return {...item, quantity: Math.max(newQuantity, 1)};
                 }
                 return item;
             });
-            return updatedItems;
         });
     };
 
