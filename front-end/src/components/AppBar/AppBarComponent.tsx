@@ -50,7 +50,7 @@ const AppBarComponent: React.FC<AppBarComponentProps> = ({
                                                              isProductPage = false,
                                                          }) => {
     const [cartPopoverAnchor, setCartPopoverAnchor] = useState<null | HTMLElement>(null);
-    const [cartItems, setCartItems] = useState<Product[]>(getCart()); // Initialize cart items from cookies
+    const [cartItems, setCartItems] = useState<Product[]>(getCart());
 
     useEffect(() => {
         updateCart(cartItems);
@@ -92,7 +92,6 @@ const AppBarComponent: React.FC<AppBarComponentProps> = ({
                     onClick={() => navigate('/')}
                 />
 
-                {/* Search Field */}
                 <Box sx={{ flexGrow: 1, display: 'flex', justifyContent: 'center' }}>
                     {!isProductPage && (
                         <TextField
@@ -130,7 +129,6 @@ const AppBarComponent: React.FC<AppBarComponentProps> = ({
                     )}
                 </Box>
 
-                {/* Cart and User Avatar */}
                 <Box sx={{ display: 'flex', alignItems: 'center' }}>
                     <IconButton
                         color="inherit"
@@ -151,7 +149,6 @@ const AppBarComponent: React.FC<AppBarComponentProps> = ({
                         navigate={navigate}
                     />
 
-                    {/* Admin Add Button */}
                     {!isProductPage && isAdmin && (
                         <IconButton
                             color="inherit"
@@ -171,7 +168,6 @@ const AppBarComponent: React.FC<AppBarComponentProps> = ({
                         </IconButton>
                     )}
 
-                    {/* User Avatar */}
                     <IconButton
                         onClick={handleAvatarClick}
                         sx={{
@@ -185,7 +181,6 @@ const AppBarComponent: React.FC<AppBarComponentProps> = ({
                         <Avatar alt="User Avatar" sx={{ backgroundColor: '#555555', color: 'white' }} />
                     </IconButton>
 
-                    {/* User Menu */}
                     <Menu
                         anchorEl={anchorEl}
                         open={Boolean(anchorEl)}
