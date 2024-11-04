@@ -15,11 +15,14 @@ import logo from '../../logo1.png';
 import CreateProductModal from '../components/CreateProductModal/createProductModal.tsx';
 import {AppBarComponent} from '../components/AppBar';
 import useAuth from '../hooks/useAuth';
+import {Product} from "../types/types.ts";
+import useCart from "../hooks/useCart.ts";
 
 const ProductsPage: React.FC = () => {
-    const [products, setProducts] = useState<any[]>([]);
+    const [products, setProducts] = useState<Product[]>([]);
     const [loading, setLoading] = useState(true);
     const [page, setPage] = useState(1);
+    const [searchingForProduct, setSearchingForProduct] = useState<string>('')
     const [searchQuery, setSearchQuery] = useState('');
     const [totalProducts, setTotalProducts] = useState(0);
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -28,6 +31,12 @@ const ProductsPage: React.FC = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const productsPerPage = 6;
+
+    const { cartItems,setCartItems, handleAddToCart, handleRemoveFromCart } = useCart();
+
+
+
+
 
     useEffect(() => {
         const params = new URLSearchParams(location.search);
@@ -71,13 +80,18 @@ const ProductsPage: React.FC = () => {
         syncUrlWithState();
     }, [syncUrlWithState]);
 
-    const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setSearchQuery(e.target.value);
-        setPage(1);
-    };
+
+
+    useEffect(() => {
+        const timeOutForSearch = setTimeout(() => {
+            setSearchQuery(searchingForProduct);
+            setPage(1);
+        }, 300);
+        return () => clearTimeout(timeOutForSearch);
+    }, [searchingForProduct]);
 
     const clearSearch = () => {
-        setSearchQuery('');
+        setSearchingForProduct('');
         setPage(1);
     };
 
@@ -99,8 +113,11 @@ const ProductsPage: React.FC = () => {
             <AppBarComponent
                 logo={logo}
                 isAdmin={isAdmin}
-                searchQuery={searchQuery}
-                onSearchChange={handleSearchChange}
+                cartItems={cartItems}
+                onAddToCart={handleAddToCart}
+                onRemoveFromCart={handleRemoveFromCart}
+                searchQuery={searchingForProduct}
+                onSearchChange={(e) => setSearchingForProduct(e.target.value)}
                 clearSearch={clearSearch}
                 handleAvatarClick={handleAvatarClick}
                 anchorEl={anchorEl}
@@ -110,6 +127,7 @@ const ProductsPage: React.FC = () => {
                 setIsModalOpen={setIsModalOpen}
                 navigate={navigate}
                 isProductPage={false}
+                setCartItems={setCartItems}
             />
 
             <Box sx={{ padding: '20px' }}>

@@ -15,7 +15,9 @@ import SearchIcon from '@mui/icons-material/Search';
 import AddIcon from '@mui/icons-material/Add';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import { Product } from "../../types/types.ts";
+
 import CartPopover from "../CartPopOver/CartPopOver.tsx";
+import {saveCart} from "../../stores/cartStore.ts";
 
 interface AppBarComponentProps {
     logo: string;
@@ -32,6 +34,8 @@ interface AppBarComponentProps {
     setIsModalOpen: (open: boolean) => void;
     isProductPage?: boolean;
     cartItems: Product[];
+    setCartItems: React.Dispatch<React.SetStateAction<Product[]>>;
+
     onAddToCart: (product: Product) => void;
     onRemoveFromCart: (productId: number) => void;
 }
@@ -53,8 +57,10 @@ const AppBarComponent: React.FC<AppBarComponentProps> = ({
                                                              cartItems,
                                                              onAddToCart,
                                                              onRemoveFromCart,
+                                                             setCartItems
                                                          }) => {
     const [cartPopoverAnchor, setCartPopoverAnchor] = useState<null | HTMLElement>(null);
+
 
     const handleCartMouseEnter = (event: React.MouseEvent<HTMLElement>) => {
         setCartPopoverAnchor(event.currentTarget);
@@ -64,24 +70,30 @@ const AppBarComponent: React.FC<AppBarComponentProps> = ({
         setCartPopoverAnchor(null);
     };
 
+
     const handleChangeQuantity = (itemId: number, action: 'increase' | 'decrease') => {
         const item = cartItems.find(item => item.id === itemId);
         if (item) {
             if (action === 'increase') {
                 onAddToCart(item);
+            } else if (action === 'decrease' && item.quantity > 1) {
+                const updatedItem = { ...item, quantity: item.quantity - 1 };
+                const updatedCart = cartItems.map(cartItem =>
+                    cartItem.id === itemId ? updatedItem : cartItem
+                );
+
+                saveCart(updatedCart);
+                setCartItems(updatedCart)
             } else {
-                if (item.quantity > 1) {
-                    onRemoveFromCart(itemId);
-                } else {
-                    onRemoveFromCart(itemId);
-                }
+                onRemoveFromCart(itemId);
             }
         }
     };
+
+
     const handleRemoveFromCart = (id: number) => {
         onRemoveFromCart(id);
     }
-
     return (
         <AppBar position="static" sx={{ backgroundColor: '#000000' }}>
             <Toolbar sx={{ display: 'flex', justifyContent: 'space-between' }}>

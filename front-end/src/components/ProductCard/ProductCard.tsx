@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, {useState, useEffect} from 'react';
 import {
     Box,
     Typography,
@@ -9,30 +9,22 @@ import {
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import ImageModal from "../ImageModal/ImageModal.tsx";
-import { getCategories } from '../../api/getCategories.ts';
+import {getCategories} from '../../api/getCategories.ts';
 import DeleteIcon from "@mui/icons-material/Delete";
-import { EditProductModal } from "../EditProductModal";
+import {EditProductModal} from "../EditProductModal";
+import {Product} from "../../types/types.ts";
 
-interface Product {
-    id: number;
-    category: number;
-    name: string;
-    description: string;
-    price: number;
-    quantity: number;
-    thumbnail: string;
-    additional_images: string[];
-}
+
 
 interface ProductCardProps {
     product: Product;
     onDelete: (id: number) => Promise<void>;
-    onAddToCart: () => void;
+    onAddToCart: (product: Product) => void; // Updated to accept a Product parameter
     isInCart: boolean;
 }
 
 
-const ProductCard: React.FC<ProductCardProps> = ({ product, onDelete, onAddToCart,isInCart }) => {
+const ProductCard: React.FC<ProductCardProps> = ({product, onDelete, onAddToCart, isInCart}) => {
     const [categories, setCategories] = useState<{ id: number; name: string }[]>([]);
     const [categoryName, setCategoryName] = useState<string>('');
     const isAdmin = JSON.parse(localStorage.getItem('isAdmin') || 'false');
@@ -73,7 +65,6 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onDelete, onAddToCar
     }, [mainImageIndex]);
 
 
-
     const handleNextImage = () => {
         setMainImageIndex((prevIndex) => (prevIndex + 1) % allImages.length);
     };
@@ -88,21 +79,18 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onDelete, onAddToCar
         }
     };
 
-    const handleAddToCart = () => {
-        onAddToCart();
-    };
 
     return (
         <>
-            <Grid container spacing={2} sx={{ maxWidth: 1200, margin: 'auto', padding: '20px' }}>
-                <Grid item xs={12} sm={5} md={4} sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                    <Box sx={{ position: 'relative', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+            <Grid container spacing={2} sx={{maxWidth: 1200, margin: 'auto', padding: '20px'}}>
+                <Grid item xs={12} sm={5} md={4} sx={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
+                    <Box sx={{position: 'relative', display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
                         {allImages.length > 1 && (
                             <IconButton
                                 onClick={handlePrevImage}
-                                sx={{ position: 'absolute', left: 0, zIndex: 1 }}
+                                sx={{position: 'absolute', left: 0, zIndex: 1}}
                             >
-                                <ArrowBackIosIcon />
+                                <ArrowBackIosIcon/>
                             </IconButton>
                         )}
 
@@ -124,15 +112,16 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onDelete, onAddToCar
                         {allImages.length > 1 && (
                             <IconButton
                                 onClick={handleNextImage}
-                                sx={{ position: 'absolute', right: 0, zIndex: 1 }}
+                                sx={{position: 'absolute', right: 0, zIndex: 1}}
                             >
-                                <ArrowForwardIosIcon />
+                                <ArrowForwardIosIcon/>
                             </IconButton>
                         )}
                     </Box>
 
                     {allImages.length >= 1 && (
-                        <Box sx={{ display: 'flex', gap: 1, overflowX: 'auto', paddingY: 1, width: '100%', marginTop: 2 }}>
+                        <Box
+                            sx={{display: 'flex', gap: 1, overflowX: 'auto', paddingY: 1, width: '100%', marginTop: 2}}>
                             {allImages.slice(carouselIndex, carouselIndex + visibleImagesCount).map((image, index) => (
                                 <Box
                                     key={index}
@@ -156,8 +145,8 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onDelete, onAddToCar
                 </Grid>
 
                 <Grid item xs={12} sm={7} md={8}>
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <Typography variant="h4" sx={{ fontWeight: 'bold', marginBottom: '8px' }}>
+                    <Box sx={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
+                        <Typography variant="h4" sx={{fontWeight: 'bold', marginBottom: '8px'}}>
                             {product.name}
                         </Typography>
                         {isAdmin && (
@@ -166,16 +155,16 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onDelete, onAddToCar
                                 onClick={handleDelete}
                                 color="error"
                             >
-                                <DeleteIcon sx={{ fontSize: '2rem' }} />
+                                <DeleteIcon sx={{fontSize: '2rem'}}/>
                             </IconButton>
                         )}
                     </Box>
 
-                    <Typography variant="subtitle1" color="text.secondary" sx={{ marginBottom: '8px' }}>
+                    <Typography variant="subtitle1" color="text.secondary" sx={{marginBottom: '8px'}}>
                         Category: {categoryName}
                     </Typography>
 
-                    <Typography variant="h5" color="primary" sx={{ fontWeight: 'bold', marginBottom: '12px' }}>
+                    <Typography variant="h5" color="primary" sx={{fontWeight: 'bold', marginBottom: '12px'}}>
                         ${product.price.toFixed(2)}
                     </Typography>
 
@@ -205,7 +194,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onDelete, onAddToCar
                         variant="contained"
                         color="primary"
                         size="large"
-                        onClick={handleAddToCart}
+                        onClick={() => onAddToCart(product)}
                         sx={{
                             paddingX: '24px',
                             paddingY: '10px',
@@ -217,6 +206,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onDelete, onAddToCar
                     >
                         Add to Cart
                     </Button>
+
 
                     {isAdmin && (
                         <Button

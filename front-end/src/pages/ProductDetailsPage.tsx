@@ -7,8 +7,7 @@ import { ProductCard } from "../components/ProductCard";
 import { AppBarComponent } from '../components/AppBar';
 import logo from "../../logo1.png";
 import useAuth from '../hooks/useAuth';
-import {addToCart, getCart, removeFromCart} from "../stores/cartStore.ts";
-import {Product} from "../types/types.ts";
+import useCart from "../hooks/useCart.ts";
 
 const ProductDetails: React.FC = () => {
     const { id } = useParams<{ id: string }>();
@@ -19,10 +18,12 @@ const ProductDetails: React.FC = () => {
     const [snackbarOpen, setSnackbarOpen] = useState(false);
     const [snackbarMessage, setSnackbarMessage] = useState('');
     const [snackbarSeverity, setSnackbarSeverity] = useState<'success' | 'error'>('success');
-    const [cartItems, setCartItems] = useState<Product[]>(getCart());
+
 
 
     const { isLoggedIn, isAdmin, anchorEl, handleAvatarClick, handleMenuClose, handleLogout } = useAuth();
+    const { cartItems,setCartItems, handleAddToCart, handleRemoveFromCart } = useCart();
+
 
     useEffect(() => {
         const fetchProductDetails = async () => {
@@ -59,29 +60,7 @@ const ProductDetails: React.FC = () => {
         }
     };
 
-    const handleAddToCart = () => {
-        if (product) {
-            addToCart(product);
-            setCartItems(getCart());
 
-            setSnackbarMessage('Product added to cart successfully.');
-            setSnackbarSeverity('success');
-            setSnackbarOpen(true);
-        }
-    };
-
-    const handleRemoveFromCart = (productId: number) => {
-        removeFromCart(productId);
-        setCartItems(getCart());
-
-        setSnackbarMessage('Product removed from cart!');
-        setSnackbarSeverity('success');
-        setSnackbarOpen(true);
-
-        setProduct((prevProduct: Product | null) =>
-            prevProduct ? { ...prevProduct, isInCart: false } : prevProduct
-        );
-    };
 
 
     const handleSnackbarClose = () => {
@@ -112,11 +91,10 @@ const ProductDetails: React.FC = () => {
                 navigate={navigate}
                 setIsModalOpen={() => {}}
                 isProductPage={true}
+                cartItems={cartItems || []}
                 onRemoveFromCart={handleRemoveFromCart}
-                cartItems={getCart()}
                 onAddToCart={handleAddToCart}
-
-
+                setCartItems={setCartItems}
             />
 
             <ProductCard

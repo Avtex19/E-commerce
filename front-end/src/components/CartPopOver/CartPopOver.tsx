@@ -8,14 +8,13 @@ import {
     IconButton,
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
-import {CartItem} from "../../types/types.ts";
-
+import {Product} from "../../types/types.ts";
 
 
 interface CartPopoverProps {
     anchorEl: null | HTMLElement;
     onClose: () => void;
-    cartItems: CartItem[];
+    cartItems: Product[];
     onRemoveFromCart: (itemId: number) => void;
     onChangeQuantity: (itemId: number, action: 'increase' | 'decrease') => void;
     navigate: (path: string) => void;
