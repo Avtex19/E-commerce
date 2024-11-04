@@ -1,28 +1,35 @@
-import Cookies from 'js-cookie';
 import { Product } from '../types/types';
 
-let cart: Product[] = JSON.parse(Cookies.get('cart') || '[]');
-
-const updateCart = (newCart: Product[]) => {
-    cart = newCart;
-    Cookies.set('cart', JSON.stringify(cart), { expires: 7 });
+const getCart = (): Product[] => {
+    try {
+        const cartData = localStorage.getItem('cart');
+        return cartData ? JSON.parse(cartData) : [];
+    } catch (error) {
+        console.error("Error parsing cart from local storage:", error);
+        return [];
+    }
 };
 
-const getCart = () => cart;
-
-const removeFromCart = (itemId: number) => {
-    cart = cart.filter(item => item.id !== itemId);
-    updateCart(cart);
+const saveCart = (cart: Product[]) => {
+    localStorage.setItem('cart', JSON.stringify(cart));
 };
 
 const addToCart = (product: Product) => {
-    const existingItem = cart.find(item => item.id === product.id);
-    if (existingItem) {
-        existingItem.quantity += 1;
+    const cart = getCart();
+    const existingItemIndex = cart.findIndex(item => item.id === product.id);
+
+    if (existingItemIndex !== -1) {
+        cart[existingItemIndex].quantity += 1;
     } else {
         cart.push({ ...product, quantity: 1 });
     }
-    updateCart(cart);
+
+    saveCart(cart);
 };
 
-export { updateCart, getCart, removeFromCart, addToCart };
+const removeFromCart = (itemId: number) => {
+    const cart = getCart().filter(item => item.id !== itemId);
+    saveCart(cart);
+};
+
+export { getCart, addToCart, removeFromCart,saveCart };
