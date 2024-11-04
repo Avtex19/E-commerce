@@ -20,15 +20,7 @@ interface CategoryResponse {
 
 export const getCategories = async (): Promise<Category[] | null> => {
     try {
-        const tokens = JSON.parse(localStorage.getItem('authTokens') || '{}');
-        const accessToken = tokens.access;
-
-        const response = await axiosInstance.get<CategoryResponse>('categories/', {
-            headers: {
-                Authorization: `Bearer ${accessToken}`,
-            },
-        });
-
+        const response = await axiosInstance.get<CategoryResponse>('categories/');
         console.log('Categories fetched:', response.data.results);
         return response.data.results;
     } catch (error: any) {
