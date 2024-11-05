@@ -1,5 +1,4 @@
 from django.utils import timezone
-from django.contrib.auth.models import User
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -10,7 +9,6 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from .serializers import RegisterUserSerializer, LoginUserSerializer, UserSerializer, AccountUpdateSerializer
 from rest_framework import status, generics, viewsets, filters
 from drf_yasg import openapi
-
 
 
 @api_view(['GET'])
