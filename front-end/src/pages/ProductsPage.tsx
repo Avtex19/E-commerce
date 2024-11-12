@@ -141,7 +141,7 @@ const ProductsPage: React.FC = () => {
                             <Grid item xs={12} sm={6} md={4} key={product.id}>
                                 <Card
                                     sx={{
-                                        maxWidth: 400,
+                                        maxWidth: 500,
                                         height: '100%',
                                         display: 'flex',
                                         flexDirection: 'column',
