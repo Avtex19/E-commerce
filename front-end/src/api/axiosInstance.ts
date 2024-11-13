@@ -1,85 +1,58 @@
 import axios from 'axios';
 
-const base_url = 'http://localhost:8000/';
-
 const axiosInstance = axios.create({
-    baseURL: base_url,
+    baseURL: 'http://localhost:8000',
 });
-
-let isRefreshing = false;
-let failedQueue: { resolve: (token: string) => void; reject: (error: any) => void }[] = [];
-
-const processQueue = (error: any, token: string | null = null) => {
-    failedQueue.forEach((prom) => {
-        if (token) {
-            prom.resolve(token);
-        } else {
-            prom.reject(error);
-        }
-    });
-    failedQueue = [];
-};
 
 axiosInstance.interceptors.request.use(
     (config) => {
-        const tokens = JSON.parse(localStorage.getItem('authTokens') || '{}');
-        const accessToken = tokens.access;
-        if (accessToken) {
-            config.headers['Authorization'] = `Bearer ${accessToken}`;
+        const authTokens = JSON.parse(localStorage.getItem('authTokens') || '{}');
+
+        if (authTokens.access) {
+            config.headers['Authorization'] = `Bearer ${authTokens.access}`;
         }
+
         return config;
     },
-    (error) => Promise.reject(error)
-);
-
-axiosInstance.interceptors.response.use(
-    (response) => response,
-    async (error) => {
-        const originalRequest = error.config;
-
-        if (error.response?.status === 401 && !originalRequest._retry) {
-            if (isRefreshing) {
-                return new Promise(function (resolve, reject) {
-                    failedQueue.push({ resolve, reject });
-                })
-                    .then((token) => {
-                        originalRequest.headers['Authorization'] = `Bearer ${token}`;
-                        return axiosInstance(originalRequest);
-                    })
-                    .catch((err) => Promise.reject(err));
-            }
-
-            originalRequest._retry = true;
-            isRefreshing = true;
-
-            try {
-                const tokens = JSON.parse(localStorage.getItem('authTokens') || '{}');
-                const refreshToken = tokens.refresh;
-                const response = await axios.post(`${base_url}api/token/refresh/`, {
-                    refresh: refreshToken,
-                });
-
-                const newAccessToken = response.data.access;
-                const newRefreshToken = response.data.refresh;
-
-                localStorage.setItem(
-                    'authTokens',
-                    JSON.stringify({ access: newAccessToken, refresh: newRefreshToken })
-                );
-
-                processQueue(null, newAccessToken);
-
-                originalRequest.headers['Authorization'] = `Bearer ${newAccessToken}`;
-                return axiosInstance(originalRequest);
-            } catch (refreshError) {
-                processQueue(refreshError, null);
-                return Promise.reject(refreshError);
-            } finally {
-                isRefreshing = false;
-            }
-        }
-
+    (error) => {
         return Promise.reject(error);
     }
 );
+
+axiosInstance.interceptors.response.use(
+    (response) => {
+        return response;
+    },
+    async (error) => {
+        if (error.response && error.response.status === 401) {
+            const authTokens = JSON.parse(localStorage.getItem('authTokens') || '{}');
+            const refreshToken = authTokens.refresh;
+
+            if (refreshToken) {
+                try {
+                    const refreshResponse = await axiosInstance.post('/api/token/refresh/', {
+                        refresh_token: refreshToken,
+                    });
+
+                    const newAccessToken = refreshResponse.data.access_token;
+
+                    localStorage.setItem('authTokens', JSON.stringify({
+                        access: newAccessToken,
+                        refresh: refreshToken,
+                    }));
+
+                    error.config.headers['Authorization'] = `Bearer ${newAccessToken}`;
+
+                    return axiosInstance(error.config);
+                } catch (refreshError) {
+                    localStorage.removeItem('authTokens');
+                }
+            } else {
+                localStorage.removeItem('authTokens');
+            }
+        }
+        return Promise.reject(error);
+    }
+);
+
 export default axiosInstance;
