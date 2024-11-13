@@ -8,7 +8,7 @@ const LoginPage: React.FC = () => {
         console.log('Tokens received:', tokens);
         localStorage.setItem('authTokens', JSON.stringify(tokens));
 
-        const adminStatus = await getCurrentUserAdminStatus(tokens.access);
+        const adminStatus = await getCurrentUserAdminStatus();
         console.log('Admin status:', adminStatus);
 
         if (adminStatus !== null) {

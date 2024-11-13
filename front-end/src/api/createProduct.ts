@@ -1,10 +1,5 @@
-import axios from 'axios';
+import axiosInstance from "./axiosInstance.ts";
 
-const base_url = 'http://localhost:8000/';
-
-const axiosInstance = axios.create({
-    baseURL: base_url,
-});
 
 interface Product {
     category: number;
@@ -18,15 +13,8 @@ interface Product {
 
 export const createProduct = async (productData: Product): Promise<Product | null> => {
     try {
-        const tokens = JSON.parse(localStorage.getItem('authTokens') || '{}');
-        const accessToken = tokens.access;
 
-        const response = await axiosInstance.post('products/', productData, {
-            headers: {
-                Authorization: `Bearer ${accessToken}`,
-            },
-        });
-
+        const response = await axiosInstance.post('products/', productData);
         console.log('Product created:', response.data);
         return response.data;
     } catch (error: any) {

@@ -22,6 +22,7 @@ const ProductDetails: React.FC = () => {
 
 
     const { isLoggedIn, isAdmin, anchorEl, handleAvatarClick, handleMenuClose, handleLogout } = useAuth();
+    console.log(isLoggedIn)
     const { cartItems,setCartItems, handleAddToCart, handleRemoveFromCart } = useCart();
 
 

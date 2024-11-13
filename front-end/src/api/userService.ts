@@ -1,10 +1,4 @@
-import axios from 'axios';
-
-const base_url = 'http://localhost:8000/';
-
-const axiosInstance = axios.create({
-    baseURL: base_url,
-});
+import axiosInstance from "./axiosInstance.ts";
 
 interface User {
     is_superuser: boolean;
@@ -12,13 +6,9 @@ interface User {
     email: string;
 }
 
-export const getCurrentUserAdminStatus = async (token: string): Promise<boolean | null> => {
+export const getCurrentUserAdminStatus = async (): Promise<boolean | null> => {
     try {
-        const response = await axiosInstance.get('account/info/', {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-        });
+        const response = await axiosInstance.get('account/info/');
 
         console.log('Fetched user:', response.data);
 

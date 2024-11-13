@@ -1,32 +1,26 @@
-import axios from 'axios';
+import axiosInstance from './axiosInstance';
 
-const base_url = 'http://localhost:8000/';
-
-const axiosInstance = axios.create({
-    baseURL: base_url,
-});
-
-export const logout = async (refreshToken: string) => {
+export const logout = async (): Promise<void> => {
     try {
         const tokens = JSON.parse(localStorage.getItem('authTokens') || '{}');
-        const accessToken = tokens.access;
+        const refreshToken = tokens.refresh;
 
-        const response = await axiosInstance.post(
-            'account/logout/',
-            {
-                refresh_token: refreshToken,
-            },
-            {
-                headers: {
-                    Authorization: `Bearer ${accessToken}`,
-                },
-            }
-        );
+        if (!refreshToken) {
+            throw new Error('No refresh token found');
+        }
+
+        const response = await axiosInstance.post('account/logout/', {
+            refresh_token: refreshToken,
+        });
 
         if (response.status !== 205) {
             throw new Error('Logout failed');
         }
+
+
+        console.log('User logged out successfully');
     } catch (error: any) {
+        console.error('Error during logout:', error.response?.data || error.message);
         throw new Error(error.response?.data?.detail || 'Logout failed');
     }
 };

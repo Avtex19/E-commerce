@@ -1,10 +1,4 @@
-import axios from 'axios';
-
-const base_url = 'http://localhost:8000/';
-
-const axiosInstance = axios.create({
-    baseURL: base_url,
-});
+import axiosInstance from "./axiosInstance.ts";
 
 interface Product {
     category: number;
@@ -18,14 +12,7 @@ interface Product {
 
 export const editProduct = async (id: number, productData: Product): Promise<Product | null> => {
     try {
-        const tokens = JSON.parse(localStorage.getItem('authTokens') || '{}');
-        const accessToken = tokens.access;
-
-        const response = await axiosInstance.patch(`products/${id}/`, productData, {
-            headers: {
-                Authorization: `Bearer ${accessToken}`,
-            },
-        });
+        const response = await axiosInstance.patch(`products/${id}/`, productData);
 
         console.log('Product updated:', response.data);
         return response.data;

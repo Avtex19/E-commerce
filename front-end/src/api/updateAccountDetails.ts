@@ -1,10 +1,5 @@
-import axios from 'axios';
+import axiosInstance from './axiosInstance.ts';
 
-const base_url = 'http://localhost:8000/';
-
-const axiosInstance = axios.create({
-    baseURL: base_url,
-});
 
 interface AccountUpdateData {
     username?: string;
@@ -15,14 +10,9 @@ interface AccountUpdateData {
 
 export const updateAccountDetails = async (updateData: AccountUpdateData): Promise<any> => {
     try {
-        const tokens = JSON.parse(localStorage.getItem('authTokens') || '{}');
-        const accessToken = tokens.access;
 
-        const response = await axiosInstance.patch('account/update/', updateData, {
-            headers: {
-                Authorization: `Bearer ${accessToken}`,
-            },
-        });
+
+        const response = await axiosInstance.patch('account/update/', updateData);
 
         console.log('Account updated:', response.data);
         return response.data;

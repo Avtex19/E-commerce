@@ -7,10 +7,16 @@ const useAuth = () => {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
     useEffect(() => {
+        const tokens = JSON.parse(localStorage.getItem('authTokens') || '{}');
+        const isValid = tokens && tokens.access && tokens.refresh;
+
+        if (!isValid) {
+            setIsLoggedIn(false);
+        }
+
         const adminStatus = localStorage.getItem('isAdmin') === 'true';
         setIsAdmin(adminStatus);
-    }, [isLoggedIn]);
-
+    }, []);
     const handleAvatarClick = (event: React.MouseEvent<HTMLElement>) => {
         setAnchorEl(event.currentTarget);
     };
@@ -21,11 +27,7 @@ const useAuth = () => {
 
     const handleLogout = async () => {
         try {
-            const tokens = JSON.parse(localStorage.getItem('authTokens') || '{}');
-            const refreshToken = tokens.refresh;
-
-            await logoutApi(refreshToken);
-
+            await logoutApi();
             localStorage.removeItem('authTokens');
             localStorage.removeItem('isAdmin');
             setIsLoggedIn(false);
